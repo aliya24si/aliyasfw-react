@@ -1,0 +1,272 @@
+[
+  {
+    "id": 1,
+    "nama": "Chocolate Cake",
+    "kategori": "Cake",
+    "harga": 75000,
+    "stok": 10,
+    "gambar": "/images/choco.jpeg",
+    "detail": { "rasa": "Coklat", "berat": "500g", "rating": 4.8 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Sudirman", "toko": "Aliya Cake" },
+    "varian": ["Coklat Classic", "Coklat Keju"],
+    "tags": ["manis", "best seller"],
+    "galeri": ["/images/choco.jpeg", "/images/choco.jpeg"]
+  },
+  {
+    "id": 2,
+    "nama": "Strawberry Cake",
+    "kategori": "Cake",
+    "harga": 80000,
+    "stok": 8,
+    "gambar": "/images/strawberry.jpeg",
+    "detail": { "rasa": "Strawberry", "berat": "500g", "rating": 4.7 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Arifin Ahmad", "toko": "Aliya Cake" },
+    "varian": ["Strawberry Fresh", "Strawberry Cream"],
+    "tags": ["fresh", "fruit"],
+    "galeri": ["/images/strawberry.jpeg"]
+  },
+  {
+    "id": 3,
+    "nama": "Donat Coklat",
+    "kategori": "Donat",
+    "harga": 5000,
+    "stok": 50,
+    "gambar": "/images/donat.jpeg",
+    "detail": { "rasa": "Coklat", "berat": "100g", "rating": 4.5 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Riau", "toko": "Aliya Cake" },
+    "varian": ["Coklat", "Coklat Kacang"],
+    "tags": ["snack", "murah"],
+    "galeri": ["/images/donat.jpeg"]
+  },
+  {
+    "id": 4,
+    "nama": "Donat Keju",
+    "kategori": "Donat",
+    "harga": 6000,
+    "stok": 40,
+    "gambar": "/images/donat2.jpeg",
+    "detail": { "rasa": "Keju", "berat": "100g", "rating": 4.6 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Nangka", "toko": "Aliya Cake" },
+    "varian": ["Keju", "Keju Susu"],
+    "tags": ["snack"],
+    "galeri": ["/images/donat2.jpeg"]
+  },
+  {
+    "id": 5,
+    "nama": "Cupcake Vanilla",
+    "kategori": "Cupcake",
+    "harga": 10000,
+    "stok": 30,
+    "gambar": "/images/cupcake.jpeg",
+    "detail": { "rasa": "Vanilla", "berat": "120g", "rating": 4.4 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. HR Soebrantas", "toko": "Aliya Cake" },
+    "varian": ["Vanilla", "Vanilla Cream"],
+    "tags": ["mini cake"],
+    "galeri": ["/images/cupcake.jpeg"]
+  },
+  {
+    "id": 6,
+    "nama": "Cupcake Coklat",
+    "kategori": "Cupcake",
+    "harga": 12000,
+    "stok": 25,
+    "gambar": "/images/cupcake2.jpeg",
+    "detail": { "rasa": "Coklat", "berat": "120g", "rating": 4.6 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Garuda", "toko": "Aliya Cake" },
+    "varian": ["Coklat", "Coklat Lava"],
+    "tags": ["mini cake"],
+    "galeri": ["/images/cupcake2.jpeg"]
+  },
+  {
+    "id": 7,
+    "nama": "Brownies",
+    "kategori": "Brownies",
+    "harga": 40000,
+    "stok": 15,
+    "gambar": "/images/brownies.jpeg",
+    "detail": { "rasa": "Coklat", "berat": "300g", "rating": 4.9 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Paus", "toko": "Aliya Cake" },
+    "varian": ["Original", "Keju"],
+    "tags": ["premium"],
+    "galeri": ["/images/brownies.jpeg"]
+  },
+  {
+    "id": 8,
+    "nama": "Cheesecake",
+    "kategori": "Cake",
+    "harga": 90000,
+    "stok": 12,
+    "gambar": "/images/cheese.jpeg",
+    "detail": { "rasa": "Keju", "berat": "500g", "rating": 4.8 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Soekarno Hatta", "toko": "Aliya Cake" },
+    "varian": ["Classic", "Blueberry"],
+    "tags": ["premium"],
+    "galeri": ["/images/cheese.jpeg"]
+  },
+  {
+    "id": 9,
+    "nama": "Lapis Legit",
+    "kategori": "Cake",
+    "harga": 120000,
+    "stok": 7,
+    "gambar": "/images/lapis.jpeg",
+    "detail": { "rasa": "Original", "berat": "600g", "rating": 4.9 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Diponegoro", "toko": "Aliya Cake" },
+    "varian": ["Original", "Prunes"],
+    "tags": ["premium"],
+    "galeri": ["/images/lapis.jpeg"]
+  },
+  {
+    "id": 10,
+    "nama": "Kue Sus",
+    "kategori": "Pastry",
+    "harga": 3000,
+    "stok": 100,
+    "gambar": "/images/sus.jpeg",
+    "detail": { "rasa": "Vanilla", "berat": "50g", "rating": 4.3 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Melur", "toko": "Aliya Cake" },
+    "varian": ["Vanilla", "Coklat"],
+    "tags": ["murah"],
+    "galeri": ["/images/sus.jpeg"]
+  },
+
+  {
+    "id": 11,
+    "nama": "Red Velvet",
+    "varian": ["Original", "Cream Cheese"],
+    "tags": ["premium"],
+    "galeri": ["/images/redvelvet.jpeg"],
+    "kategori": "Cake",
+    "harga": 85000,
+    "stok": 9,
+    "gambar": "/images/redvelvet.jpeg",
+    "detail": { "rasa": "Red Velvet", "berat": "500g", "rating": 4.8 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Durian", "toko": "Aliya Cake" }
+  },
+
+  {
+    "id": 12,
+    "nama": "Blackforest",
+    "varian": ["Classic", "Cherry"],
+    "tags": ["premium"],
+    "galeri": ["/images/blackforest.jpeg"],
+    "kategori": "Cake",
+    "harga": 95000,
+    "stok": 6,
+    "gambar": "/images/blackforest.jpeg",
+    "detail": { "rasa": "Coklat Cherry", "berat": "500g", "rating": 4.7 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Cemara", "toko": "Aliya Cake" }
+  },
+
+  {
+    "id": 13,
+    "nama": "Croissant",
+    "varian": ["Butter", "Chocolate"],
+    "tags": ["pastry"],
+    "galeri": ["/images/croissant.jpeg"],
+    "kategori": "Pastry",
+    "harga": 15000,
+    "stok": 20,
+    "gambar": "/images/croissant.jpeg",
+    "detail": { "rasa": "Butter", "berat": "80g", "rating": 4.5 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Cempaka", "toko": "Aliya Cake" }
+  },
+
+  {
+    "id": 14,
+    "nama": "Roti Coklat",
+    "varian": ["Coklat", "Coklat Keju"],
+    "tags": ["roti"],
+    "galeri": ["/images/roti.jpeg"],
+    "kategori": "Roti",
+    "harga": 7000,
+    "stok": 35,
+    "gambar": "/images/roti.jpeg",
+    "detail": { "rasa": "Coklat", "berat": "90g", "rating": 4.4 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Dahlia", "toko": "Aliya Cake" }
+  },
+
+  {
+    "id": 15,
+    "nama": "Roti Keju",
+    "varian": ["Keju", "Keju Susu"],
+    "tags": ["roti"],
+    "galeri": ["/images/roti2.jpeg"],
+    "kategori": "Roti",
+    "harga": 8000,
+    "stok": 30,
+    "gambar": "/images/roti2.jpeg",
+    "detail": { "rasa": "Keju", "berat": "90g", "rating": 4.5 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Anggrek", "toko": "Aliya Cake" }
+  },
+
+  {
+    "id": 16,
+    "nama": "Macaron",
+    "varian": ["Mix", "Rainbow"],
+    "tags": ["dessert"],
+    "galeri": ["/images/macaron.jpeg"],
+    "kategori": "Dessert",
+    "harga": 20000,
+    "stok": 18,
+    "gambar": "/images/macaron.jpeg",
+    "detail": { "rasa": "Mix", "berat": "50g", "rating": 4.9 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Kenanga", "toko": "Aliya Cake" }
+  },
+
+  {
+    "id": 17,
+    "nama": "Pancake",
+    "varian": ["Maple", "Chocolate"],
+    "tags": ["dessert"],
+    "galeri": ["/images/pancake.jpeg"],
+    "kategori": "Dessert",
+    "harga": 25000,
+    "stok": 22,
+    "gambar": "/images/pancake.jpeg",
+    "detail": { "rasa": "Maple", "berat": "200g", "rating": 4.6 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Flamboyan", "toko": "Aliya Cake" }
+  },
+
+  {
+    "id": 18,
+    "nama": "Tiramisu",
+    "varian": ["Classic", "Coffee Strong"],
+    "tags": ["dessert"],
+    "galeri": ["/images/tiramisu.jpeg"],
+    "kategori": "Dessert",
+    "harga": 70000,
+    "stok": 10,
+    "gambar": "/images/tiramisu.jpeg",
+    "detail": { "rasa": "Coffee", "berat": "300g", "rating": 4.8 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Mawar", "toko": "Aliya Cake" }
+  },
+
+  {
+    "id": 19,
+    "nama": "Churros",
+    "varian": ["Coklat", "Matcha"],
+    "tags": ["snack"],
+    "galeri": ["/images/churros.jpeg"],
+    "kategori": "Snack",
+    "harga": 15000,
+    "stok": 28,
+    "gambar": "/images/churros.jpeg",
+    "detail": { "rasa": "Coklat", "berat": "120g", "rating": 4.6 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Teratai", "toko": "Aliya Cake" }
+  },
+
+  {
+    "id": 20,
+    "nama": "Eclair",
+    "varian": ["Coklat", "Vanilla"],
+    "tags": ["pastry"],
+    "galeri": ["/images/eclair.jpeg"],
+    "kategori": "Pastry",
+    "harga": 18000,
+    "stok": 16,
+    "gambar": "/images/eclair.jpeg",
+    "detail": { "rasa": "Coklat", "berat": "110g", "rating": 4.7 },
+    "lokasi": { "kota": "Pekanbaru", "alamat": "Jl. Kamboja", "toko": "Aliya Cake" }
+  }
+]
