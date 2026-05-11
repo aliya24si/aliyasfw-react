@@ -6,8 +6,7 @@ import Loading from './components/Loading';
 const MainLayout = lazy(() => import('./layouts/MainLayout'));
 const AuthLayout = lazy(() => import('./layouts/AuthLayout'));
 const Home = lazy(() => import('./pages/Home'));
-const Doctors = lazy(() => import('./pages/Doctors'));
-const Pharmacy = lazy(() => import('./pages/Pharmacy')); // Tambahkan ini
+const Appointments = lazy(() => import('./pages/Appointments'));
 const Login = lazy(() => import('./pages/auth/Login'));
 const Register = lazy(() => import('./pages/auth/Register'));
 const Forgot = lazy(() => import('./pages/auth/Forgot'));
@@ -30,8 +29,7 @@ function App() {
           {/* Layout Utama (Navbar/Sidebar + Konten) */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/doctors" element={<Doctors />} />
-            <Route path="/pharmacy" element={<Pharmacy />} /> {/* Tambahkan ini */}
+            <Route path="/Appointments" element={<Appointments />} />
           </Route>
 
           {/* Halaman 404 */}

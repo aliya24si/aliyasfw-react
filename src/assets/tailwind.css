@@ -11,24 +11,46 @@
 }
 
 @theme {
-    /* Font Sesuai Permintaan */
+    /* Font Sesuai Desain */
     --font-barlow: "Barlow", sans-serif;
     --font-poppins: "Poppins", sans-serif;
 
-    /* Warna Utama Hasil Penyesuaian Desain Gambar */
-    --color-primary: #14d2e1;      /* Cyan Utama */
-    --color-primary-light: #e0fbfc;/* Cyan Sangat Muda untuk bg input */
-    --color-latar: #f8fafc;        /* Abu-abu sangat muda untuk bg aplikasi */
-    --color-teks: #111827;         /* Hitam pekat untuk judul */
-    --color-teks-samping: #6b7280; /* Abu-abu untuk deskripsi/lorem ipsum */
-    --color-garis: #e5e7eb;
+    /* Penyesuaian Warna Berdasarkan Gambar Desain (Medicare Admin) */
+    --color-primary: #0f172a;       /* Navy Gelap (Sidebar & Tombol Utama) */
+    --color-accent: #10b981;        /* Hijau (Status Online/Confirmed) */
+    --color-warning: #f59e0b;       /* Kuning (Status Pending) */
+    --color-danger: #ef4444;        /* Merah (Status Cancelled) */
+    
+    --color-latar: #f9fafb;         /* Abu-abu sangat muda (Background Utama) */
+    --color-sidebar: #ffffff;       /* Putih (Sidebar Background) */
+    --color-card: #ffffff;          /* Putih (Card Dashboard) */
+    
+    --color-teks: #111827;          /* Hitam pekat (Judul/Text utama) */
+    --color-teks-samping: #6b7280;  /* Abu-abu (Sub-item/Icon sidebar) */
+    --color-garis: #f3f4f6;         /* Garis pemisah/border card */
 }
 
 @layer base {
   body {
-    @apply bg-latar text-teks font-barlow;
+    @apply bg-latar text-teks font-barlow antialiased;
   }
+  
   h1, h2, h3, .font-bold {
-    @apply font-poppins;
+    @apply font-poppins tracking-tight;
+  }
+
+  /* Custom Scrollbar agar mirip desain modern figma */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+}
+
+@layer components {
+  /* Helper class jika kamu ingin membuat tombol hitam seperti di Login/Sidebar */
+  .btn-primary {
+    @apply bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition-all;
   }
 }
