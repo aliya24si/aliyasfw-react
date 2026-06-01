@@ -1,4 +1,5 @@
 import React from "react";
+import InputField from "../../components/InputField";
 
 const Login = () => {
   return (
@@ -53,16 +54,16 @@ const Login = () => {
           {/* Form - Spacing antar input dikurangi */}
           <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
             <div className="space-y-1">
-              <label className="text-xs font-medium text-teks-samping ml-1 uppercase tracking-wider">
+              {/* <label className="text-xs font-medium text-teks-samping ml-1 uppercase tracking-wider">
                 Email
-              </label>
+              </label> */}
               <InputField label="Email" type="email" placeholder="tempmail@gmail.com" />
             </div>
 
             <div className="space-y-1 relative">
-              <label className="text-xs font-medium text-teks-samping ml-1 uppercase tracking-wider">
+              {/* <label className="text-xs font-medium text-teks-samping ml-1 uppercase tracking-wider">
                 Password
-              </label>
+              </label> */}
               <div className="relative">
                 <InputField label="Password" type="password" placeholder="*******" />
                 <button
