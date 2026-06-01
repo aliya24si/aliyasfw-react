@@ -56,11 +56,7 @@ const Login = () => {
               <label className="text-xs font-medium text-teks-samping ml-1 uppercase tracking-wider">
                 Email
               </label>
-              <input
-                type="email"
-                placeholder="tempmail@gmail.com"
-                className="w-full rounded-xl border border-garis bg-white px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all text-teks"
-              />
+              <InputField label="Email" type="email" placeholder="tempmail@gmail.com" />
             </div>
 
             <div className="space-y-1 relative">
@@ -68,11 +64,7 @@ const Login = () => {
                 Password
               </label>
               <div className="relative">
-                <input
-                  type="password"
-                  placeholder="*******"
-                  className="w-full rounded-xl border border-garis bg-white px-4 py-3 outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all text-teks"
-                />
+                <InputField label="Password" type="password" placeholder="*******" />
                 <button
                   type="button"
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-teks-samping hover:text-primary"
