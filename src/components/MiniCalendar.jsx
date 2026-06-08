@@ -1,22 +1,21 @@
 import React from 'react';
+import { Calendar } from "@/components/ui/calendar";
 
 export default function MiniCalendar() {
+  const [date, setDate] = React.useState(new Date());
+
   return (
-    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-      <div className="flex justify-between items-center font-bold text-sm px-2 mb-4 text-teks">
-        <span>February 2026</span>
-        <div className="flex gap-4 text-teks-samping cursor-pointer"><span>{"<"}</span><span>{">"}</span></div>
+    <div className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm flex flex-col items-center justify-center">
+      <div className="w-full px-2 mb-2">
+        <h3 className="font-poppins font-bold text-sm text-teks">Schedule Planner</h3>
+        <p className="text-[11px] text-teks-samping">Select a date to inspect allocations</p>
       </div>
-      <div className="grid grid-cols-7 text-[10px] text-teks-samping font-bold text-center mb-2">
-        {['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => <div key={d}>{d}</div>)}
-      </div>
-      <div className="grid grid-cols-7 gap-y-3 text-sm text-center">
-         {[...Array(28)].map((_, i) => (
-           <div key={i} className={`py-1 mx-auto w-8 h-8 flex items-center justify-center cursor-pointer ${i+1 === 10 ? 'bg-primary text-white rounded-lg font-bold' : 'text-teks hover:bg-gray-50 rounded-lg'}`}>
-             {i + 1}
-           </div>
-         ))}
-      </div>
+      <Calendar
+        mode="single"
+        selected={date}
+        onSelect={setDate}
+        className="rounded-md border border-gray-50 max-w-full"
+      />
     </div>
   );
 }

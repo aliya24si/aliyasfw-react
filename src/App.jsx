@@ -11,6 +11,7 @@ const Login = lazy(() => import('./pages/auth/Login'));
 const Register = lazy(() => import('./pages/auth/Register'));
 const Forgot = lazy(() => import('./pages/auth/Forgot'));
 const NotFound = lazy(() => import('./components/NotFound'));
+const Appp = lazy(() => import('./Appp'));
 
 function App() {
   return (
@@ -34,6 +35,8 @@ function App() {
 
           {/* Halaman 404 */}
           <Route path="/404" element={<NotFound />} />
+
+          <Route path="/App" element={<Appp />} />
           
           {/* Redirect jika mengetik alamat asal-asalan */}
           <Route path="*" element={<Navigate to="/404" replace />} />

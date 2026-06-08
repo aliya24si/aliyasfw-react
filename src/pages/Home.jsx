@@ -6,6 +6,25 @@ import AppointmentRow from '../components/AppointmentRow';
 import ActivityItem from '../components/ActivityItem';
 import QuickActionSection from '../components/QuickActionSection';
 
+// Import komponen Chart Shadcn UI
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+
+// Data dicocokkan eksak dengan nilai komponen StatCard di bawah
+const chartData = [
+  { metric: "Total Patients", value: 2847 },
+  { metric: "Today Appointments", value: 24 },
+  { metric: "Active Cases", value: 156 },
+  { metric: "Critical Alerts", value: 7 },
+];
+
+const chartConfig = {
+  value: {
+    label: "Total Count",
+    color: "hsl(var(--primary))",
+  },
+};
+
 export default function Home() {
   return (
     <div className="flex-1 bg-latar min-h-screen">
@@ -18,6 +37,33 @@ export default function Home() {
           <StatCard title="Today's Appointments" value="24" trend="+3" icon={<Calendar size={20}/>} color="green" />
           <StatCard title="Active Cases" value="156" trend="+8" icon={<Activity size={20}/>} color="orange" />
           <StatCard title="Critical Alerts" value="7" trend="-2" icon={<AlertCircle size={20}/>} color="red" />
+        </div>
+
+        {/* VISUALISASI BAR CHART SHADCN */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="mb-4">
+            <h3 className="font-poppins font-bold text-teks text-base">Metrics Analytics View</h3>
+            <p className="text-xs text-teks-samping">Real-time synchronized data visualization of clinical metrics</p>
+          </div>
+          <ChartContainer config={chartConfig} className="h-[240px] w-full">
+            <BarChart accessibilityLayer data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+              <XAxis
+                dataKey="metric"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                className="text-xs font-medium fill-gray-500"
+              />
+              <YAxis 
+                axisLine={false} 
+                tickLine={false} 
+                className="text-xs fill-gray-500"
+              />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Bar dataKey="value" fill="#3b82f6" radius={8} maxBarSize={60} />
+            </BarChart>
+          </ChartContainer>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
