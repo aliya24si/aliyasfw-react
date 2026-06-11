@@ -10,6 +10,7 @@ const Appointments = lazy(() => import('./pages/Appointments'));
 const Login = lazy(() => import('./pages/auth/Login'));
 const Register = lazy(() => import('./pages/auth/Register'));
 const Forgot = lazy(() => import('./pages/auth/Forgot'));
+const GuestHome = lazy(() => import('./pages/GuestHome'));
 const NotFound = lazy(() => import('./components/NotFound'));
 
 function App() {
@@ -26,11 +27,16 @@ function App() {
             <Route path="/forgot" element={<Forgot />} />
           </Route>
 
-          {/* Layout Utama (Navbar/Sidebar + Konten) */}
+          {/* Layout Utama Dokter/Staff Internal (Ada Sidebar Kiri) */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/Appointments" element={<Appointments />} />
           </Route>
+
+          {/* RUTE GUEST DI LUAR LAYOUT UTAMA 
+            Halaman ini mandiri (Stand-alone), jadi tidak akan membawa Sidebar dari MainLayout
+          */}
+          <Route path="/guest/home" element={<GuestHome />} />
 
           {/* Halaman 404 */}
           <Route path="/404" element={<NotFound />} />

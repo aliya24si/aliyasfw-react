@@ -1,10 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InputField from "../../components/InputField";
 import Register from "./Register";
 import Forgot from "./Forgot";
+import { useNavigate } from "react-router-dom"; 
 
 export default function AuthContainer() {
+  const navigate = useNavigate(); 
+  
+  // Menggunakan state untuk menjamin nilai input terbaca dengan akurat
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // Fungsi untuk menangani login multi-akun
+  const handleLogin = (e) => {
+    e.preventDefault();
+    
+    // Normalisasi teks email yang diinput
+    const cleanEmail = email.toLowerCase().trim();
+
+    // Jalur pengkondisian akun berdasarkan state yang terisi
+    if (cleanEmail === "guest@gmail.com" || cleanEmail === "guest") {
+      // Jika login pakai akun guest, arahkan ke halaman guest baru
+      navigate("/guest/home");
+    } else {
+      // Jika menggunakan akun utama (Emily/Admin), arahkan ke dashboard utama
+      navigate("/"); 
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex h-screen w-screen overflow-hidden bg-white font-barlow">
       {/* SISI KIRI: Background & Teks (Hanya Desktop) */}
@@ -50,10 +74,26 @@ export default function AuthContainer() {
                 <h2 className="text-3xl font-bold text-teks">Login</h2>
                 <p className="mt-1 text-sm text-teks-samping">Let's login into your PetTrack account first</p>
               </div>
-              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-                <InputField label="Email" type="email" placeholder="tempmail@gmail.com" />
-                <InputField label="Password" type="password" placeholder="*******" />
-                <button type="submit" className="w-full bg-primary text-white py-3 rounded-xl font-bold hover:opacity-95 transition-all shadow-md mt-2">
+              
+              <form className="space-y-4" onSubmit={handleLogin}>
+                {/* Menambahkan value dan onChange agar state terikat dengan sempurna */}
+                <InputField 
+                  label="Email" 
+                  name="email" 
+                  type="email" 
+                  placeholder="tempmail@gmail.com" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <InputField 
+                  label="Password" 
+                  name="password" 
+                  type="password" 
+                  placeholder="*******" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button type="submit" className="w-full bg-primary text-white py-3 rounded-xl font-bold hover:opacity-95 transition-all shadow-md mt-2 cursor-pointer">
                   Login
                 </button>
               </form>

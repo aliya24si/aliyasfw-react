@@ -1,10 +1,12 @@
 import React from 'react';
 
-export default function InputField({ label, type = "text", placeholder, value, onChange }) {
+// Tambahkan prop 'name' di sini
+export default function InputField({ label, name, type = "text", placeholder, value, onChange }) {
   return (
     <div className="space-y-1 w-full">
       {label && <label className="text-xs font-medium text-teks-samping ml-1 uppercase tracking-wider">{label}</label>}
       <input
+        name={name} // Amankan atribut name di sini agar dibaca oleh FormData
         type={type}
         placeholder={placeholder}
         value={value}
