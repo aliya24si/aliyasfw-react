@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Activity,
@@ -31,6 +31,20 @@ export default function GuestHome() {
 
   // State untuk FAQ Accordion
   const [openFaq, setOpenFaq] = useState(null);
+
+  // 1. Implementasi useRef untuk merujuk ke seksi Review/Testimoni
+  const reviewSectionRef = useRef(null);
+
+  // 2. Implementasi useEffect untuk memantau siklus hidup komponen saat pertama kali dimuat
+  useEffect(() => {
+    console.log("PetTract Public Portal Node: Active Connection Verified (2026).");
+    // Di sini kamu bisa meletakkan fetch data API jika dibutuhkan di kemudian hari
+  }, []);
+
+  // Fungsi pembantu untuk memicu scroll halus ke seksi review
+  const scrollToReviews = () => {
+    reviewSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   // Data Tier Membership untuk informasi edukasi Guest
   const tiers = [
@@ -68,14 +82,14 @@ export default function GuestHome() {
     },
   ];
 
-  // Data Review/Testimoni Pelanggan menggunakan 6 aset gambar
+  // Data Review/Testimoni Pelanggan menggunakan 6 aset gambar (Lengkap dengan review6.jpg)
   const reviews = [
     { id: 1, img: "/img/review1.jpg", name: "Anisa Rahma", pet: "Milo (Cat Owner)", text: "Dokternya ramah banget dan klinik sangat steril. Rekomendasi utama untuk anabul!" },
     { id: 2, img: "/img/review2.jpg", name: "Budi Santoso", pet: "Bleky (Dog Owner)", text: "Penanganan darurat di UGD sangat cepat, obatnya lengkap dan harganya transparan." },
     { id: 3, img: "/img/review3.jpg", name: "Rian Dinata", pet: "Kiko (Rabbit Owner)", text: "Tempat bersih bebas dari bau amis kotoran, staf frontdesk sigap menyambut." },
     { id: 4, img: "/img/review4.jpg", name: "Siti Amelia", pet: "Chacha (Persian Cat)", text: "Grooming kutunya ampuh banget sekali datang langsung bersih mengembang!" },
     { id: 5, img: "/img/review5.jpg", name: "Kevin Wijaya", pet: "Gupi (Golden Retriever)", text: "Suka sekali dengan sistem registrasi digitalnya, rekam medis peliharaan tersusun rapi." },
-    { id: 6, img: "/img/review6.jpg", name: "Dina Olivia", pet: "Ciko & Cika (Sugar Glider)", text: "Dokter hewannya qqsangat detail menjelaskan edukasi pakan dan vitamin!" },
+    { id: 6, img: "/img/review6.jpg", name: "Dina Olivia", pet: "Ciko & Cika (Sugar Glider)", text: "Dokter hewannya sangat detail menjelaskan edukasi pakan dan vitamin!" },
   ];
 
   const toggleFaq = (index) => {
@@ -118,9 +132,9 @@ export default function GuestHome() {
         </div>
       </nav>
 
-      {/* ================= 2. HERO BANNER WELCOME (DIPERTAHANKAN) ================= */}
+      {/* ================= 2. HERO BANNER WELCOME ================= */}
       <div className="bg-white border-b border-slate-200/50 py-14 px-8">
-        <div className="max-w-7xl mx-auto space-y-3">
+        <div className="max-w-7xl mx-auto space-y-4">
           <div className="bg-emerald-50 border border-emerald-100 px-3.5 py-1.5 rounded-full flex items-center gap-2.5 w-fit shadow-2xs">
             <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
             <span className="text-xs font-bold text-emerald-700 tracking-wider uppercase">
@@ -136,6 +150,16 @@ export default function GuestHome() {
             keuntungan keanggotaan, hingga melihat informasi penanganan gawat
             darurat.
           </p>
+          {/* Tombol aksi pemicu useRef */}
+          <div className="pt-2">
+            <button
+              onClick={scrollToReviews}
+              className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-50 border border-blue-100/80 px-4 py-2.5 rounded-xl transition cursor-pointer"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              Lihat Ulasan Pengunjung
+            </button>
+          </div>
         </div>
       </div>
 
@@ -323,8 +347,8 @@ export default function GuestHome() {
         </div>
       </section>
 
-      {/* ================= 5. PERUBAHAN: SEKSI GALERI REVIEW / TESTIMONI PENGUNJUNG (LEBIH KECIL & RINGKAS) ================= */}
-      <section className="max-w-7xl w-full mx-auto px-8 py-10 space-y-6">
+      {/* ================= 5. SEKSI GALERI REVIEW / TESTIMONI PENGUNJUNG (REF LINKED) ================= */}
+      <section ref={reviewSectionRef} className="max-w-7xl w-full mx-auto px-8 py-10 space-y-6 scroll-mt-24">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-widest">
             <MessageSquare className="w-4 h-4" /> Suara Pelanggan
@@ -337,7 +361,7 @@ export default function GuestHome() {
           </p>
         </div>
 
-        {/* Layout Grid dengan ukuran kartu yang jauh lebih compact */}
+        {/* Layout Grid Ringkas 3 Kolom */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {reviews.map((rev) => (
             <div
