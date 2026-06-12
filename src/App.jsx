@@ -11,12 +11,17 @@ const Login = lazy(() => import('./pages/auth/Login'));
 const Register = lazy(() => import('./pages/auth/Register'));
 const Forgot = lazy(() => import('./pages/auth/Forgot'));
 const GuestHome = lazy(() => import('./pages/GuestHome'));
+
+// REGISTRASI HALAMAN MEMBER BARU (LAZY LOADED)
+const MemberHome = lazy(() => import('./pages/MemberHome'));
+const MemberBooking = lazy(() => import('./pages/MemberBooking')); // TAMBAHAN BARU
+const MemberHistory = lazy(() => import('./pages/MemberHistory')); // TAMBAHAN BARU
+
 const NotFound = lazy(() => import('./components/NotFound'));
 
 function App() {
   return (
     <Router>
-      {/* Suspense membungkus semua rute agar Loading muncul saat pindah halaman */}
       <Suspense fallback={<Loading />}>
         <Routes>
           
@@ -33,10 +38,13 @@ function App() {
             <Route path="/Appointments" element={<Appointments />} />
           </Route>
 
-          {/* RUTE GUEST DI LUAR LAYOUT UTAMA 
-            Halaman ini mandiri (Stand-alone), jadi tidak akan membawa Sidebar dari MainLayout
-          */}
+          {/* RUTE GUEST DI LUAR LAYOUT UTAMA */}
           <Route path="/guest/home" element={<GuestHome />} />
+
+          {/* RUTE PORTAL PREMIUM MEMBER (STAND-ALONE LONG PAGE) */}
+          <Route path="/member/home" element={<MemberHome />} />
+          <Route path="/member/booking" element={<MemberBooking />} />   {/* TAMBAHAN BARU */}
+          <Route path="/member/history" element={<MemberHistory />} />   {/* TAMBAHAN BARU */}
 
           {/* Halaman 404 */}
           <Route path="/404" element={<NotFound />} />

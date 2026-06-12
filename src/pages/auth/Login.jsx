@@ -8,30 +8,30 @@ import { useNavigate } from "react-router-dom";
 export default function AuthContainer() {
   const navigate = useNavigate(); 
   
-  // Menggunakan state untuk menjamin nilai input terbaca dengan akurat
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Fungsi untuk menangani login multi-akun
   const handleLogin = (e) => {
     e.preventDefault();
     
-    // Normalisasi teks email yang diinput
     const cleanEmail = email.toLowerCase().trim();
 
-    // Jalur pengkondisian akun berdasarkan state yang terisi
-    if (cleanEmail === "guest@gmail.com" || cleanEmail === "guest") {
-      // Jika login pakai akun guest, arahkan ke halaman guest baru
+    // PENYESUAIAN LOGIN MULTI-ROLE SESUAI PERMINTAAN DOSEN
+    if (cleanEmail === "member@gmail.com" || cleanEmail === "member") {
+      // Jika login menggunakan akun member, arahkan ke gerbang khusus member
+      navigate("/member/home");
+    } else if (cleanEmail === "guest@gmail.com" || cleanEmail === "guest") {
+      // Jika akun guest anonim biasa
       navigate("/guest/home");
     } else {
-      // Jika menggunakan akun utama (Emily/Admin), arahkan ke dashboard utama
+      // Akun internal (Dokter/Admin) ke dashboard pusat
       navigate("/"); 
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex h-screen w-screen overflow-hidden bg-white font-barlow">
-      {/* SISI KIRI: Background & Teks (Hanya Desktop) */}
+      {/* SISI KRI: Background & Teks (Hanya Desktop) */}
       <div className="relative hidden lg:flex w-[45%] xl:w-[50%] flex-col justify-end p-12 text-white">
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
@@ -76,7 +76,6 @@ export default function AuthContainer() {
               </div>
               
               <form className="space-y-4" onSubmit={handleLogin}>
-                {/* Menambahkan value dan onChange agar state terikat dengan sempurna */}
                 <InputField 
                   label="Email" 
                   name="email" 
