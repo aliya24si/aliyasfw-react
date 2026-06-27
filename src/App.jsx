@@ -11,6 +11,8 @@ const Login = lazy(() => import('./pages/auth/Login'));
 const Register = lazy(() => import('./pages/auth/Register'));
 const Forgot = lazy(() => import('./pages/auth/Forgot'));
 const GuestHome = lazy(() => import('./pages/GuestHome'));
+const DataUser = lazy(() => import('./pages/DataUser'));
+const Patients = lazy(() => import('./pages/Patients'));
 
 // REGISTRASI HALAMAN MEMBER BARU (LAZY LOADED)
 const MemberHome = lazy(() => import('./pages/MemberHome'));
@@ -36,6 +38,8 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/Appointments" element={<Appointments />} />
+            <Route path="/Data User" element={<DataUser />} />
+            <Route path="/patients" element={<Patients />} />
           </Route>
 
           {/* RUTE GUEST DI LUAR LAYOUT UTAMA */}

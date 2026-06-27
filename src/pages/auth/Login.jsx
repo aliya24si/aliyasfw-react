@@ -1,37 +1,55 @@
 import React, { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InputField from "../../components/InputField";
-import Register from "./Register";
-import Forgot from "./Forgot";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate, Link } from "react-router-dom"; 
+import { userAPI } from "../../services/userAPI";
 
-export default function AuthContainer() {
+export default function Login() {
   const navigate = useNavigate(); 
-  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
     
     const cleanEmail = email.toLowerCase().trim();
 
-    // PENYESUAIAN LOGIN MULTI-ROLE SESUAI PERMINTAAN DOSEN
-    if (cleanEmail === "member@gmail.com" || cleanEmail === "member") {
-      // Jika login menggunakan akun member, arahkan ke gerbang khusus member
-      navigate("/member/home");
-    } else if (cleanEmail === "guest@gmail.com" || cleanEmail === "guest") {
-      // Jika akun guest anonim biasa
-      navigate("/guest/home");
-    } else {
-      // Akun internal (Dokter/Admin) ke dashboard pusat
-      navigate("/"); 
+    try {
+      const userFound = await userAPI.checkLogin(cleanEmail, password);
+
+      if (userFound && userFound.length > 0) {
+        const loggedInUser = userFound[0];
+        // Simpan data login ke localStorage
+        localStorage.setItem("userRole", loggedInUser.role);
+        localStorage.setItem("userName", loggedInUser.name);
+        localStorage.setItem("userEmail", loggedInUser.email);
+
+        // Pengalihan halaman berdasarkan role database
+        if (loggedInUser.role === "admin") {
+          navigate("/"); // Admin ke home utama / dashboard pusat
+        } else if (loggedInUser.role === "member") {
+          navigate("/member/home"); // Member ke member/home
+        } else if (loggedInUser.role === "guest") {
+          navigate("/guest/home");
+        } else {
+          navigate("/");
+        }
+      } else {
+        setError("Email atau Password salah. Silakan coba lagi.");
+      }
+    } catch (err) {
+      setError("Terjadi masalah koneksi ke server.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex h-screen w-screen overflow-hidden bg-white font-barlow">
-      {/* SISI KRI: Background & Teks (Hanya Desktop) */}
+      {/* SISI KIRI: Background & Teks */}
       <div className="relative hidden lg:flex w-[45%] xl:w-[50%] flex-col justify-end p-12 text-white">
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
@@ -42,79 +60,56 @@ export default function AuthContainer() {
           <h1 className="mb-4 text-4xl xl:text-5xl font-bold leading-tight tracking-tight">
             Optimize your medicare operations with our intelligent medical admin dashboard
           </h1>
-          <p className="mb-6 max-w-md text-base xl:text-lg text-gray-200 leading-relaxed opacity-90">
-            This comprehensive digital solution centralizes and streamlines essential tasks, 
-            empowering providers to deliver better patient care.
-          </p>
         </div>
       </div>
 
-      {/* SISI KANAN: Manajemen Tab Arah (Login - Register - Forgot) */}
+      {/* SISI KANAN */}
       <div className="flex flex-1 flex-col items-center justify-center bg-white p-6 md:p-10 overflow-y-auto">
         <div className="w-full max-w-[420px] flex flex-col">
           
-          {/* Logo */}
-          <div className="mb-6 flex justify-center lg:justify-start">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-primary">
-              <span className="text-lg font-bold text-primary">M</span>
+          <div className="space-y-4">
+            <div>
+              <h2 className="text-3xl font-bold text-teks">Login</h2>
+              <p className="mt-1 text-sm text-teks-samping">Let's login into your PetTrack account first</p>
             </div>
-          </div>
 
-          {/* Shadcn UI Tabs Component */}
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8 bg-gray-100 p-1 rounded-xl">
-              <TabsTrigger value="login" className="rounded-lg text-xs font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">Login</TabsTrigger>
-              <TabsTrigger value="register" className="rounded-lg text-xs font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">Register</TabsTrigger>
-              <TabsTrigger value="forgot" className="rounded-lg text-xs font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">Forgot</TabsTrigger>
-            </TabsList>
-
-            {/* Konten Login */}
-            <TabsContent value="login" className="space-y-4 animate-in fade-in-50 duration-200">
-              <div>
-                <h2 className="text-3xl font-bold text-teks">Login</h2>
-                <p className="mt-1 text-sm text-teks-samping">Let's login into your PetTrack account first</p>
+            {error && (
+              <div className="p-3 bg-red-100 border border-red-300 text-red-700 text-sm rounded-xl">
+                {error}
               </div>
-              
-              <form className="space-y-4" onSubmit={handleLogin}>
-                <InputField 
-                  label="Email" 
-                  name="email" 
-                  type="email" 
-                  placeholder="tempmail@gmail.com" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <InputField 
-                  label="Password" 
-                  name="password" 
-                  type="password" 
-                  placeholder="*******" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button type="submit" className="w-full bg-primary text-white py-3 rounded-xl font-bold hover:opacity-95 transition-all shadow-md mt-2 cursor-pointer">
-                  Login
-                </button>
-              </form>
-            </TabsContent>
+            )}
+            
+            <form className="space-y-4" onSubmit={handleLogin}>
+              <InputField 
+                label="Email" 
+                name="email" 
+                type="email" 
+                placeholder="tempmail@gmail.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <InputField 
+                label="Password" 
+                name="password" 
+                type="password" 
+                placeholder="*******" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="w-full bg-primary text-white py-3 rounded-xl font-bold hover:opacity-95 transition-all shadow-md mt-2 cursor-pointer disabled:opacity-50"
+              >
+                {loading ? "Menghubungkan..." : "Login"}
+              </button>
+            </form>
 
-            {/* Konten Register */}
-            <TabsContent value="register" className="animate-in fade-in-50 duration-200">
-              <Register embedded={true} />
-            </TabsContent>
-
-            {/* Konten Forgot */}
-            <TabsContent value="forgot" className="animate-in fade-in-50 duration-200">
-              <Forgot embedded={true} />
-            </TabsContent>
-          </Tabs>
-
-          {/* Footer Info */}
-          <div className="mt-12 pt-6 flex justify-between text-[11px] text-teks-samping opacity-60 border-t border-gray-100">
-            <p>© 2023 MediCare. All rights reserved.</p>
-            <div className="flex gap-3">
-              <a href="#" className="hover:text-primary">Terms</a>
-              <a href="#" className="hover:text-primary">Privacy</a>
+            <div className="mt-4 text-center text-sm text-teks-samping">
+              Belum punya akun?{" "}
+              <Link to="/register" className="text-primary font-bold hover:underline">
+                Register di sini
+              </Link>
             </div>
           </div>
 
