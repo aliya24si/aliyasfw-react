@@ -38,7 +38,6 @@ export default function GuestHome() {
   // 2. Implementasi useEffect untuk memantau siklus hidup komponen saat pertama kali dimuat
   useEffect(() => {
     console.log("PetTract Public Portal Node: Active Connection Verified (2026).");
-    // Di sini kamu bisa meletakkan fetch data API jika dibutuhkan di kemudian hari
   }, []);
 
   // Fungsi pembantu untuk memicu scroll halus ke seksi review
@@ -67,7 +66,7 @@ export default function GuestHome() {
         "Free grooming 2 bulan sekali",
         "Diskon jemput satwa sakit",
       ],
-      color: "border-amber-400 bg-amber-50/30",
+      color: "border-amber-400 bg-amber-50/30 ring-2 ring-amber-400",
     },
     {
       name: "Platinum VIP",
@@ -97,24 +96,29 @@ export default function GuestHome() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 antialiased flex flex-col font-sans selection:bg-blue-600 selection:text-white">
-      {/* ================= 1. HEADER NAVBAR ATAS (DIPERTAHANKAN) ================= */}
-      <nav className="sticky top-0 z-40 bg-white border-b border-slate-200/80 px-8 py-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 antialiased flex flex-col font-sans">
+      
+      {/* ================= 1. HEADER NAVBAR ATAS ================= */}
+      <nav className="sticky top-0 z-50 bg-slate-900 text-white px-8 py-4 shadow-lg">
         <div className="max-w-7xl mx-auto w-full flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="bg-slate-950 text-white w-12 h-12 rounded-xl flex items-center justify-center shadow-md">
-              <Activity className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg text-slate-900 tracking-tight">
-                  PetTract
-                </span>
-                <span className="text-xs bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">
-                  Public Portal
-                </span>
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-3 group">
+              <div className="bg-amber-400 text-slate-900 w-10 h-10 rounded-xl flex items-center justify-center font-black shadow-md">
+                <Activity className="w-6 h-6" />
               </div>
-              <span className="text-sm text-slate-400 block leading-none mt-1">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-extrabold text-base tracking-tight text-white">
+                    PetTract
+                  </span>
+                  <span className="text-[10px] bg-amber-400/10 border border-amber-400/20 text-amber-300 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">
+                    Public Portal
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="hidden md:flex items-center gap-1 border-l border-slate-700 pl-6 space-x-2">
+              <span className="text-xs font-semibold text-slate-400 tracking-wider uppercase">
                 Hospital Management System
               </span>
             </div>
@@ -123,9 +127,9 @@ export default function GuestHome() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate("/login")}
-              className="flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-slate-950 bg-white border border-slate-200 hover:border-slate-300 px-5 py-3 rounded-xl transition-all shadow-xs cursor-pointer"
+              className="flex items-center gap-2 text-xs font-bold text-slate-300 hover:text-white bg-slate-800 border border-slate-700 hover:border-slate-600 px-4 py-2.5 rounded-xl transition"
             >
-              <LogIn className="w-4 h-4 text-slate-600" />
+              <LogIn className="w-3.5 h-3.5 text-slate-400" />
               Sign In System
             </button>
           </div>
@@ -133,73 +137,70 @@ export default function GuestHome() {
       </nav>
 
       {/* ================= 2. HERO BANNER WELCOME ================= */}
-      <div className="bg-white border-b border-slate-200/50 py-14 px-8">
+      <header className="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-950 text-white py-14 px-8 border-b border-slate-700">
         <div className="max-w-7xl mx-auto space-y-4">
-          <div className="bg-emerald-50 border border-emerald-100 px-3.5 py-1.5 rounded-full flex items-center gap-2.5 w-fit shadow-2xs">
-            <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
-            <span className="text-xs font-bold text-emerald-700 tracking-wider uppercase">
-              Pendaftaran Online Aktif & Terintegrasi
-            </span>
+          <div className="bg-emerald-400/10 border border-emerald-400/20 text-emerald-300 px-3 py-1 rounded-full text-xs font-bold w-fit uppercase tracking-wider flex items-center gap-1.5">
+            <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+            Pendaftaran Online Aktif & Terintegrasi
           </div>
-          <h1 className="text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+          <h1 className="text-3xl lg:text-4xl font-black tracking-tight leading-tight max-w-4xl">
             Sistem Manajemen Klinis Satwa Modern Terpadu
           </h1>
-          <p className="text-slate-500 text-base max-w-4xl leading-relaxed">
+          <p className="text-slate-400 text-sm max-w-4xl leading-relaxed">
             Selamat datang di portal publik PetTract. Di bawah ini Anda dapat
             mempelajari kapabilitas ekosistem digital kami, mempelajari sistem
             keuntungan keanggotaan, hingga melihat informasi penanganan gawat
             darurat.
           </p>
-          {/* Tombol aksi pemicu useRef */}
           <div className="pt-2">
             <button
               onClick={scrollToReviews}
-              className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-50 border border-blue-100/80 px-4 py-2.5 rounded-xl transition cursor-pointer"
+              className="bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-md flex items-center gap-2"
             >
               <MessageSquare className="w-3.5 h-3.5" />
               Lihat Ulasan Pengunjung
             </button>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* ================= 3. SEKSI EDUKASI & FOTO HERO UTAMA (DIPERTAHANKAN) ================= */}
-      <main className="max-w-7xl w-full mx-auto px-8 py-12 space-y-12 flex-1">
+      {/* ================= 3. SEKSI EDUKASI & FOTO HERO UTAMA ================= */}
+      <main className="max-w-7xl w-full mx-auto px-8 py-12 space-y-16 flex-1">
+        
         {/* Mengenal PetTract + Grid Foto Utama */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          <div className="lg:col-span-7 bg-white p-8 rounded-3xl border border-slate-200/70 shadow-[0_2px_12px_rgba(0,0,0,0.01)] flex flex-col justify-center space-y-5">
-            <div className="flex items-center gap-3 text-blue-600">
-              <Sparkles className="w-6 h-6" />
-              <h2 className="font-black text-xl text-slate-900 tracking-tight">
-                Mengenal Platform PetTract
-              </h2>
+          <div className="lg:col-span-7 bg-white p-8 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col justify-center space-y-5">
+            <div className="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-wider">
+              <Sparkles className="w-4 h-4" /> Eco-System Intro
             </div>
-            <p className="text-base text-slate-600 leading-relaxed">
-              <strong>PetTract</strong> adalah ekosistem digital terintegrasi
+            <h2 className="font-black text-xl text-slate-900 tracking-tight">
+              Mengenal Platform PetTract
+            </h2>
+            <p className="text-sm text-slate-500 leading-relaxed">
+              <strong className="text-slate-900">PetTract</strong> adalah ekosistem digital terintegrasi
               yang dirancang khusus untuk menyederhanakan manajemen operasional
               rumah sakit hewan dan klinik praktisi satwa. Kami menghubungkan
               pemilik hewan peliharaan, staf medis, hingga dokter spesialis
               dalam satu basis data terpadu guna menghadirkan pelayanan
               kesehatan hewan yang cepat, transparan, dan terukur secara{" "}
-              <i>real-time</i>.
+              <span className="text-blue-600 font-semibold">real-time</span>.
             </p>
           </div>
 
           {/* Implementasi Foto Medis Utama */}
-          <div className="lg:col-span-5 relative rounded-3xl overflow-hidden shadow-md min-h-[240px]">
+          <div className="lg:col-span-5 relative rounded-3xl overflow-hidden shadow-lg min-h-[240px]">
             <img
               src="/img/dokter1.jpg"
               alt="PetTract Expert Veterinarian"
               className="absolute inset-0 w-full h-full object-cover object-center transform hover:scale-105 transition duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
-            <div className="absolute bottom-5 left-5 right-5 text-white">
-              <span className="text-[10px] bg-blue-600 px-2 py-0.5 rounded-md uppercase font-bold tracking-widest">
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+            <div className="absolute bottom-6 left-6 right-6 text-white">
+              <span className="text-[10px] bg-amber-400 text-slate-900 px-2 py-0.5 rounded-md uppercase font-black tracking-wider">
                 Core Care
               </span>
-              <p className="text-xs text-slate-200 font-medium mt-1">
-                Pelayanan medis profesional didukung sistem catatan e-Health
-                pintar.
+              <p className="text-sm text-slate-200 font-medium mt-1.5">
+                Pelayanan medis profesional didukung sistem catatan e-Health pintar.
               </p>
             </div>
           </div>
@@ -208,25 +209,25 @@ export default function GuestHome() {
         {/* Fitur Utama */}
         <section className="space-y-6">
           <div className="space-y-1">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">
-              Arsitektur Core
-            </h3>
-            <h2 className="text-xl font-black text-slate-900">
+            <div className="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-wider">
+              <Activity className="w-4 h-4" /> Architecture Matrix
+            </div>
+            <h2 className="text-2xl font-black text-slate-900">
               Apa Saja Yang Bisa Dilakukan di Dalam Sistem?
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Fitur 1 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-xs flex gap-4 items-start">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex gap-4 items-start hover:shadow-md transition">
               <div className="p-3 bg-blue-50 text-blue-600 rounded-xl h-12 w-12 flex items-center justify-center shrink-0">
                 <Calendar className="w-6 h-6" />
               </div>
-              <div className="space-y-1.5">
-                <h4 className="font-extrabold text-sm text-slate-900">
+              <div className="space-y-1">
+                <h4 className="font-bold text-slate-900 text-sm">
                   Identifikasi & Reservasi Instan
                 </h4>
-                <p className="text-sm text-slate-500 leading-relaxed">
+                <p className="text-xs text-slate-500 leading-relaxed">
                   Pemilik dapat mengajukan jadwal janji temu, jenis tindakan,
                   serta memantau nomor urut antrean berjalan melalui portal
                   publik tanpa perlu mengantre lama.
@@ -235,15 +236,15 @@ export default function GuestHome() {
             </div>
 
             {/* Fitur 2 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-xs flex gap-4 items-start">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex gap-4 items-start hover:shadow-md transition">
               <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl h-12 w-12 flex items-center justify-center shrink-0">
                 <FileSpreadsheet className="w-6 h-6" />
               </div>
-              <div className="space-y-1.5">
-                <h4 className="font-extrabold text-sm text-slate-900">
+              <div className="space-y-1">
+                <h4 className="font-bold text-slate-900 text-sm">
                   Rekam Medis Digital (Electronic e-Health)
                 </h4>
-                <p className="text-sm text-slate-500 leading-relaxed">
+                <p className="text-xs text-slate-500 leading-relaxed">
                   Dokter langsung mencatat anamnesis, histori keluhan, riwayat
                   alergi satwa, tindakan vaksinasi, hingga resep obat secara
                   terintegrasi dan aman.
@@ -252,15 +253,15 @@ export default function GuestHome() {
             </div>
 
             {/* Fitur 3 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-xs flex gap-4 items-start">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex gap-4 items-start hover:shadow-md transition">
               <div className="p-3 bg-amber-50 text-amber-600 rounded-xl h-12 w-12 flex items-center justify-center shrink-0">
                 <HeartHandshake className="w-6 h-6" />
               </div>
-              <div className="space-y-1.5">
-                <h4 className="font-extrabold text-sm text-slate-900">
+              <div className="space-y-1">
+                <h4 className="font-bold text-slate-900 text-sm">
                   Hospitalization & Pasien Rawat Inap
                 </h4>
-                <p className="text-sm text-slate-500 leading-relaxed">
+                <p className="text-xs text-slate-500 leading-relaxed">
                   Memudahkan pengawasan intensif paramedis terhadap grafik tanda
                   vital satwa, dosis cairan infus, berkas rekam laboratorium,
                   hingga pakan berkala.
@@ -269,15 +270,15 @@ export default function GuestHome() {
             </div>
 
             {/* Fitur 4 */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-xs flex gap-4 items-start">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex gap-4 items-start hover:shadow-md transition">
               <div className="p-3 bg-purple-50 text-purple-600 rounded-xl h-12 w-12 flex items-center justify-center shrink-0">
                 <Smartphone className="w-6 h-6" />
               </div>
-              <div className="space-y-1.5">
-                <h4 className="font-extrabold text-sm text-slate-900">
+              <div className="space-y-1">
+                <h4 className="font-bold text-slate-900 text-sm">
                   Sinkronisasi Kasir & Gudang Farmasi
                 </h4>
-                <p className="text-sm text-slate-500 leading-relaxed">
+                <p className="text-xs text-slate-500 leading-relaxed">
                   Menghubungkan pintu loket kasir, stok gudang obat apotek,
                   serta mesin laboratorium internal agar alur verifikasi
                   transaksi berjalan kilat.
@@ -288,18 +289,18 @@ export default function GuestHome() {
         </section>
       </main>
 
-      {/* ================= 4. SEKSI TIER MEMBERSHIP & AMBISI POIN (DIPERTAHANKAN) ================= */}
-      <section className="bg-slate-100 border-t border-b border-slate-200/80 py-16 px-8">
+      {/* ================= 4. SEKSI TIER MEMBERSHIP & AMBISI POIN ================= */}
+      <section className="bg-slate-900 border-t border-b border-slate-800 py-16 px-8 text-white">
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="space-y-1">
-              <div className="flex items-center gap-2 text-purple-600 font-bold text-xs uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
                 <Zap className="w-4 h-4" /> Leveling System
               </div>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+              <h2 className="text-2xl font-black tracking-tight text-white">
                 Sistem Tingkatan Kualifikasi Member
               </h2>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-400">
                 Dapatkan keuntungan berlipat dengan mendaftarkan akun dan
                 mengumpulkan akumulasi poin pengobatan satwa Anda.
               </p>
@@ -307,7 +308,7 @@ export default function GuestHome() {
 
             <button
               onClick={() => navigate("/login")}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-5 py-3 rounded-xl transition flex items-center gap-2 cursor-pointer shadow-md shadow-blue-600/10 shrink-0"
+              className="bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-xs px-5 py-3 rounded-xl transition flex items-center gap-2 shrink-0 shadow-md shadow-amber-400/10"
             >
               <LogIn className="w-3.5 h-3.5" /> Daftar Member Sekarang
             </button>
@@ -317,11 +318,20 @@ export default function GuestHome() {
             {tiers.map((t, idx) => (
               <div
                 key={idx}
-                className={`p-6 rounded-3xl border-2 bg-white flex flex-col justify-between gap-6 relative shadow-2xs border-slate-200`}
+                className={`p-6 rounded-3xl border-2 flex flex-col justify-between gap-6 relative ${
+                  t.name.includes("Gold") 
+                    ? "border-amber-400 bg-amber-50/10 ring-2 ring-amber-400 text-white" 
+                    : "border-slate-800 bg-slate-800/40 text-white"
+                }`}
               >
+                {t.name.includes("Gold") && (
+                  <span className="absolute -top-3 left-6 text-[10px] bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-full font-black uppercase shadow-sm tracking-wider">
+                    Tier Paling Populer
+                  </span>
+                )}
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-black text-lg text-slate-900">
+                    <h4 className="font-black text-lg text-white">
                       {t.name}
                     </h4>
                     <span className="text-xs font-semibold text-slate-400 block mt-0.5">
@@ -333,9 +343,9 @@ export default function GuestHome() {
                     {t.benefits.map((b, bIdx) => (
                       <li
                         key={bIdx}
-                        className="text-xs text-slate-600 flex items-start gap-2 leading-tight"
+                        className="text-xs text-slate-300 flex items-start gap-2 leading-tight"
                       >
-                        <CheckCircle className="w-4 h-4 shrink-0 mt-0.5 text-blue-500" />
+                        <CheckCircle className={`w-4 h-4 shrink-0 mt-0.5 ${t.name.includes("Gold") ? "text-amber-400" : "text-slate-400"}`} />
                         <span>{b}</span>
                       </li>
                     ))}
@@ -347,36 +357,36 @@ export default function GuestHome() {
         </div>
       </section>
 
-      {/* ================= 5. SEKSI GALERI REVIEW / TESTIMONI PENGUNJUNG (REF LINKED) ================= */}
-      <section ref={reviewSectionRef} className="max-w-7xl w-full mx-auto px-8 py-10 space-y-6 scroll-mt-24">
+      {/* ================= 5. SEKSI GALERI REVIEW / TESTIMONI PENGUNJUNG ================= */}
+      <section ref={reviewSectionRef} className="max-w-7xl w-full mx-auto px-8 py-16 space-y-6 scroll-mt-24">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-widest">
+          <div className="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-wider">
             <MessageSquare className="w-4 h-4" /> Suara Pelanggan
           </div>
-          <h2 className="text-xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">
             Apa Kata Mereka Tentang PetTract?
           </h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-sm text-slate-500">
             Telah dipercaya oleh ribuan pemilik hewan peliharaan.
           </p>
         </div>
 
         {/* Layout Grid Ringkas 3 Kolom */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {reviews.map((rev) => (
             <div
               key={rev.id}
-              className="bg-white border border-slate-200/60 rounded-2xl p-4 shadow-2xs hover:shadow-xs transition duration-200 flex gap-4 items-start"
+              className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs hover:shadow-md transition duration-300 flex gap-4 items-start bg-gradient-to-b from-white to-slate-50/50"
             >
               {/* Gambar Review Mini */}
-              <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 relative bg-slate-100 border border-slate-100">
+              <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 relative bg-slate-100 border border-slate-200/60">
                 <img
                   src={rev.img}
                   alt={`Review dari ${rev.name}`}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute bottom-0 right-0 left-0 bg-slate-950/40 text-center py-0.5 text-[8px] font-bold text-amber-300 flex items-center justify-center gap-0.5">
-                  <Star className="w-2 h-2 fill-amber-300 text-amber-300" /> 5.0
+                <div className="absolute bottom-0 right-0 left-0 bg-slate-950/60 text-center py-0.5 text-[8px] font-bold text-amber-400 flex items-center justify-center gap-0.5">
+                  <Star className="w-2 h-2 fill-amber-400 text-amber-400" /> 5.0
                 </div>
               </div>
 
@@ -384,16 +394,16 @@ export default function GuestHome() {
               <div className="space-y-1.5 flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
                   <div className="truncate">
-                    <h5 className="font-extrabold text-slate-900 text-xs truncate">
+                    <h5 className="font-extrabold text-slate-900 text-sm truncate">
                       {rev.name}
                     </h5>
-                    <p className="text-[10px] text-slate-400 font-medium truncate">
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider truncate">
                       {rev.pet}
                     </p>
                   </div>
-                  <Heart className="w-3 h-3 text-rose-500 fill-rose-500 opacity-60 shrink-0" />
+                  <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 opacity-80 shrink-0" />
                 </div>
-                <p className="text-[11px] text-slate-600 italic leading-normal line-clamp-2">
+                <p className="text-xs text-slate-600 italic leading-relaxed line-clamp-3">
                   "{rev.text}"
                 </p>
               </div>
@@ -402,55 +412,55 @@ export default function GuestHome() {
         </div>
       </section>
 
-      {/* ================= 6. ALUR PELAYANAN PASIEN (DIPERTAHANKAN) ================= */}
-      <section className="bg-white border-b border-slate-200/60 py-16 px-8">
-        <div className="max-w-7xl mx-auto space-y-10">
-          <div className="text-center space-y-2 max-w-xl mx-auto">
-            <h3 className="text-xs font-bold text-blue-600 uppercase tracking-widest">
+      {/* ================= 6. ALUR PELAYANAN PASIEN ================= */}
+      <section className="bg-white border-t border-b border-slate-200/80 py-16 px-8">
+        <div className="max-w-7xl mx-auto space-y-12">
+          <div className="text-center space-y-1 max-w-xl mx-auto">
+            <div className="text-xs font-bold text-blue-600 uppercase tracking-wider">
               Bagaimana PetTract Bekerja?
-            </h3>
+            </div>
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">
               4 Langkah Alur Pelayanan Pasien
             </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 relative">
-            <div className="space-y-3">
-              <div className="text-3xl font-black text-blue-100">01</div>
-              <h4 className="font-extrabold text-base text-slate-900">
+            <div className="space-y-3 p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
+              <div className="text-3xl font-black text-blue-200 tracking-tight">01</div>
+              <h4 className="font-bold text-slate-900 text-sm">
                 Registrasi Mandiri
               </h4>
-              <p className="text-sm text-slate-500 leading-relaxed">
+              <p className="text-xs text-slate-500 leading-relaxed">
                 Mengisi data diri dan detail peliharaan lewat formulir publik di
                 atas halaman ini.
               </p>
             </div>
-            <div className="space-y-3">
-              <div className="text-3xl font-black text-blue-100">02</div>
-              <h4 className="font-extrabold text-base text-slate-900">
+            <div className="space-y-3 p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
+              <div className="text-3xl font-black text-blue-200 tracking-tight">02</div>
+              <h4 className="font-bold text-slate-900 text-sm">
                 Validasi Frontdesk
               </h4>
-              <p className="text-sm text-slate-500 leading-relaxed">
+              <p className="text-xs text-slate-500 leading-relaxed">
                 Staf administrasi mencocokkan jadwal dokter hewan yang tersedia
                 dan mengonfirmasi jam Anda.
               </p>
             </div>
-            <div className="space-y-3">
-              <div className="text-3xl font-black text-blue-100">03</div>
-              <h4 className="font-extrabold text-base text-slate-900">
+            <div className="space-y-3 p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
+              <div className="text-3xl font-black text-blue-200 tracking-tight">03</div>
+              <h4 className="font-bold text-slate-900 text-sm">
                 Tindakan & Rekam Medis
               </h4>
-              <p className="text-sm text-slate-500 leading-relaxed">
+              <p className="text-xs text-slate-500 leading-relaxed">
                 Hewan ditangani dokter. Diagnosa, obat, dan status vital
                 langsung diinput ke dalam sistem e-Health.
               </p>
             </div>
-            <div className="space-y-3">
-              <div className="text-3xl font-black text-blue-100">04</div>
-              <h4 className="font-extrabold text-base text-slate-900">
+            <div className="space-y-3 p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
+              <div className="text-3xl font-black text-blue-200 tracking-tight">04</div>
+              <h4 className="font-bold text-slate-900 text-sm">
                 Kasir & Farmasi
               </h4>
-              <p className="text-sm text-slate-500 leading-relaxed">
+              <p className="text-xs text-slate-500 leading-relaxed">
                 Sistem menghitung billing otomatis, pembayaran diselesaikan, dan
                 resep dikirim ke apotek.
               </p>
@@ -459,66 +469,72 @@ export default function GuestHome() {
         </div>
       </section>
 
-      {/* ================= 7. FASILITAS KLINIK (DIPERTAHANKAN) ================= */}
+      {/* ================= 7. FASILITAS KLINIK ================= */}
       <section className="max-w-7xl w-full mx-auto px-8 py-16 space-y-10">
         <div className="space-y-1">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-            Medical Quality
-          </h3>
+          <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs uppercase tracking-wider">
+            <ShieldCheck className="w-4 h-4" /> Medical Quality
+          </div>
           <h2 className="text-2xl font-black text-slate-900 tracking-tight">
             Fasilitas Penanganan Medis Utama Klinik
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white border border-slate-200/70 p-6 rounded-2xl space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700">
+          <div className="bg-white border border-slate-200/80 p-6 rounded-3xl space-y-4 hover:shadow-md transition">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 shadow-xs">
               <Stethoscope className="w-5 h-5" />
             </div>
-            <h4 className="font-bold text-base text-slate-900">
-              Poliklinik & Ruang Konsultasi
-            </h4>
-            <p className="text-sm text-slate-500 leading-relaxed">
-              Ruang pemeriksaan yang steril, dilengkapi alat diagnosa lengkap
-              untuk anjing, kucing, burung, serta eksotik pet lainnya.
-            </p>
+            <div className="space-y-1.5">
+              <h4 className="font-bold text-base text-slate-900">
+                Poliklinik & Ruang Konsultasi
+              </h4>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Ruang pemeriksaan yang steril, dilengkapi alat diagnosa lengkap
+                untuk anjing, kucing, burung, serta eksotik pet lainnya.
+              </p>
+            </div>
           </div>
 
-          <div className="bg-white border border-slate-200/70 p-6 rounded-2xl space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700">
+          <div className="bg-white border border-slate-200/80 p-6 rounded-3xl space-y-4 hover:shadow-md transition">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 shadow-xs">
               <ShieldCheck className="w-5 h-5" />
             </div>
-            <h4 className="font-bold text-base text-slate-900">
-              ICU & Ruang Rawat Inap Isolasian
-            </h4>
-            <p className="text-sm text-slate-500 leading-relaxed">
-              Dukungan inkubator oksigen dan pemisahan klaster ruangan infeksius
-              demi mencegah penularan silang virus antar hewan.
-            </p>
+            <div className="space-y-1.5">
+              <h4 className="font-bold text-base text-slate-900">
+                ICU & Ruang Rawat Inap Isolasian
+              </h4>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Dukungan inkubator oksigen dan pemisahan klaster ruangan infeksius
+                demi mencegah penularan silang virus antar hewan.
+              </p>
+            </div>
           </div>
 
-          <div className="bg-white border border-slate-200/70 p-6 rounded-2xl space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700">
+          <div className="bg-white border border-slate-200/80 p-6 rounded-3xl space-y-4 hover:shadow-md transition">
+            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 shadow-xs">
               <Info className="w-5 h-5" />
             </div>
-            <h4 className="font-bold text-base text-slate-900">
-              Laboratorium Klinik Internal
-            </h4>
-            <p className="text-sm text-slate-500 leading-relaxed">
-              Uji sampel darah, feses, urinalisis, mikroskopi jamur, serta X-Ray
-              digital dengan akurasi tinggi tanpa perlu keluar klinik.
-            </p>
+            <div className="space-y-1.5">
+              <h4 className="font-bold text-base text-slate-900">
+                Laboratorium Klinik Internal
+              </h4>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Uji sampel darah, feses, urinalisis, mikroskopi jamur, serta X-Ray
+                digital dengan akurasi tinggi tanpa perlu keluar klinik.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ================= 8. FREQUENTLY ASKED QUESTIONS (FAQ) (DIPERTAHANKAN) ================= */}
-      <section className="bg-white border-t border-slate-200/60 py-16 px-8">
+      {/* ================= 8. FREQUENTLY ASKED QUESTIONS (FAQ) ================= */}
+      <section className="bg-white border-t border-slate-200/80 py-16 px-8">
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="text-center space-y-1">
-            <h3 className="text-xs font-bold text-blue-600 uppercase tracking-widest">
+            <div className="text-xs font-bold text-blue-600 uppercase tracking-wider">
               Bantuan Informasi
-            </h3>
+            </div>
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">
               Pertanyaan yang Sering Diajukan (FAQ)
             </h2>
@@ -541,20 +557,20 @@ export default function GuestHome() {
             ].map((item, index) => (
               <div
                 key={index}
-                className="border border-slate-200 rounded-xl overflow-hidden transition-all bg-slate-50/30"
+                className="border border-slate-200 rounded-2xl overflow-hidden transition-all bg-slate-50/30"
               >
                 <button
                   onClick={() => toggleFaq(index)}
-                  className="w-full text-left px-6 py-4.5 font-bold text-slate-900 text-sm flex justify-between items-center bg-white cursor-pointer hover:bg-slate-50/50"
+                  className="w-full text-left px-6 py-4 font-bold text-slate-900 text-sm flex justify-between items-center bg-white hover:bg-slate-50/50 transition-colors"
                   type="button"
                 >
                   <span>{item.q}</span>
                   <ChevronDown
-                    className={`w-4 h-4 text-slate-400 transition-transform ${openFaq === index ? "rotate-180" : ""}`}
+                    className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${openFaq === index ? "rotate-180 text-blue-600" : ""}`}
                   />
                 </button>
                 {openFaq === index && (
-                  <div className="px-6 py-4 text-sm text-slate-600 bg-white border-t border-slate-100 leading-relaxed">
+                  <div className="px-6 py-4 text-xs text-slate-500 bg-white border-t border-slate-100 leading-relaxed animate-fade-in">
                     {item.a}
                   </div>
                 )}
@@ -564,38 +580,41 @@ export default function GuestHome() {
         </div>
       </section>
 
-      {/* ================= 9. EMERGENCY CONTACT BANNER (DIPERTAHANKAN) ================= */}
+      {/* ================= 9. EMERGENCY CONTACT BANNER ================= */}
       <section className="max-w-7xl w-full mx-auto px-8 py-12">
-        <div className="bg-slate-950 rounded-3xl p-8 lg:p-12 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-md">
-          <div className="space-y-2">
+        <div className="bg-gradient-to-br from-slate-950 to-blue-950 rounded-3xl p-8 lg:p-12 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-xl relative overflow-hidden">
+          <div className="space-y-2 relative z-10">
             <h2 className="text-xl lg:text-2xl font-black tracking-tight">
               Butuh Penanganan Kondisi Gawat Darurat Segera?
             </h2>
-            <p className="text-slate-400 text-sm max-w-xl leading-relaxed">
+            <p className="text-slate-400 text-xs max-w-xl leading-relaxed">
               Jika hewan kesayangan Anda mengalami trauma parah, kejang,
               perdarahan hebat, atau keracunan, mohon langsung bawa ke Unit
               Gawat Darurat tanpa perlu mendaftar online.
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto shrink-0">
+          <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto shrink-0 relative z-10">
             <a
               href="tel:+62812345678"
-              className="bg-red-600 hover:bg-red-700 text-white font-bold text-sm px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow-sm"
+              className="bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-6 py-3.5 rounded-xl flex items-center justify-center gap-2 transition shadow-md shadow-red-600/20 text-center"
             >
               <PhoneCall className="w-4 h-4" /> UGD Hotline (24 Jam)
             </a>
-            <div className="bg-slate-900 border border-slate-800 text-slate-300 font-medium text-sm px-5 py-3.5 rounded-xl flex items-center justify-center gap-2">
-              <MapPin className="w-4 h-4 text-slate-500" /> Pekanbaru, Indonesia
+            <div className="bg-slate-900/80 border border-slate-800 text-slate-300 font-bold text-xs px-5 py-3.5 rounded-xl flex items-center justify-center gap-2">
+              <MapPin className="w-4 h-4 text-amber-400" /> Pekanbaru, Indonesia
             </div>
           </div>
         </div>
       </section>
 
-      {/* ================= 10. FOOTER BAWAH (DIPERTAHANKAN) ================= */}
-      <footer className="text-center text-xs font-semibold text-slate-400 py-8 border-t border-slate-200/60 bg-white">
-        © 2026 PetTract Core Platform. All systems operational. Secure Guest
-        Token Node Active.
+      {/* ================= 10. FOOTER BAWAH ================= */}
+      <footer className="text-center text-xs font-semibold text-slate-500 py-8 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between px-8 max-w-7xl w-full mx-auto gap-4">
+        <p>© 2026 PetTract Core Platform. All systems operational. Secure Guest Token Node Active.</p>
+        <div className="flex items-center gap-1.5 text-blue-600">
+          <Heart className="w-4 h-4 fill-blue-600" /> <span>Dedicated for your animal health journey</span>
+        </div>
       </footer>
+      
     </div>
   );
 }
