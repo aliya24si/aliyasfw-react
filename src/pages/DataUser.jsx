@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { userAPI } from '../services/userAPI';
+import { supabaseService } from '../services/supabaseService';
+import { supabase } from '../lib/supabase';
 import UserTable from '../components/users/UserTable';
 
 export default function DataUser() {
@@ -13,7 +14,7 @@ export default function DataUser() {
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const data = await userAPI.fetchUsers();
+      const data = await supabaseService.fetchUsers();
       setUsers(data);
     } catch (err) {
       console.error("Gagal memuat list data user:", err);
@@ -28,17 +29,10 @@ export default function DataUser() {
     alert("Form ubah data dinonaktifkan dari halaman ini.");
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Apakah Anda yakin mau menghapus data pengguna ini?")) return;
-    setLoading(true);
-    try {
-      await userAPI.deleteUser(id);
-      loadUsers();
-    } catch (err) {
-      alert("Gagal menghapus entri user.");
-    } finally {
-      setLoading(false);
-    }
+  // Delete dinonaktifkan sementara — menghapus dari public.users tidak menghapus auth.users
+  // TODO: Fase 4 akan implementasi delete user via Supabase Admin API / Edge Function
+  const handleDelete = async () => {
+    alert("Fitur hapus user akan tersedia di fase pengembangan selanjutnya (via Admin API).");
   };
 
   return (

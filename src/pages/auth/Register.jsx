@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { EyeOff, Eye } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import { userAPI } from '../../services/userAPI';
+import { supabaseService } from '../../services/supabaseService';
 import InputField from '../../components/InputField';
 
 export default function Register() {
@@ -12,6 +12,7 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -19,27 +20,36 @@ export default function Register() {
 
     setLoading(true);
     setError("");
+    setSuccess("");
 
     const cleanEmail = email.toLowerCase().trim();
 
     try {
-      // 1. Simpan data registrasi baru ke Supabase
-      await userAPI.createUser({
-        name,
-        email: cleanEmail,
-        password,
-        role: "member" // Default role sesuai rancangan database
-      });
+      // Gunakan Supabase Auth signUp
+      // Trigger database akan otomatis membuat record di public.users
+      await supabaseService.signUp(cleanEmail, password, name);
 
-      // 2. Langsung set data login di localStorage agar tersambung untuk login berikutnya
-      localStorage.setItem("userRole", "member");
-      localStorage.setItem("userName", name);
-      localStorage.setItem("userEmail", cleanEmail);
+      // Tampilkan pesan sukses
+      setSuccess("Akun berhasil dibuat! Silakan cek email Anda untuk konfirmasi.");
 
-      // 3. Karena role otomatis member, arahkan langsung ke /member/home
-      navigate("/member/home");
+      // Redirect ke member home setelah 2 detik
+      setTimeout(() => {
+        navigate("/member/home");
+      }, 2000);
     } catch (err) {
-      setError("Gagal mendaftar. Email mungkin sudah terpakai atau koneksi bermasalah.");
+      console.error("Register error:", err);
+      const message = err.message || "";
+      if (message.includes("already registered")) {
+        setError("Email sudah terdaftar. Silakan login.");
+      } else if (message.includes("Password should be")) {
+        setError("Password minimal 6 karakter.");
+      } else if (message.includes("Database error")) {
+        setError("Kesalahan database: " + message);
+      } else if (message.includes("signup")) {
+        setError("Pendaftaran ditolak: " + message);
+      } else {
+        setError("Gagal mendaftar: " + (message || "Coba lagi."));
+      }
     } finally {
       setLoading(false);
     }
@@ -68,12 +78,18 @@ export default function Register() {
           <div className="space-y-4">
             <div>
               <h2 className="text-3xl font-bold text-teks">Register</h2>
-              <p className="mt-1 text-sm text-teks-samping">Let's create your MediCare account first</p>
+              <p className="mt-1 text-sm text-teks-samping">Let's create your PetTract account first</p>
             </div>
 
             {error && (
               <div className="p-3 bg-red-100 border border-red-300 text-red-700 text-sm rounded-xl">
                 {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="p-3 bg-emerald-100 border border-emerald-300 text-emerald-700 text-sm rounded-xl">
+                {success}
               </div>
             )}
 
@@ -101,7 +117,7 @@ export default function Register() {
                   label="Password" 
                   name="password" 
                   type={showPassword ? "text" : "password"} 
-                  placeholder="*******" 
+                  placeholder="Min. 6 characters" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />

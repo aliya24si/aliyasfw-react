@@ -45,39 +45,36 @@ export default function GuestHome() {
     reviewSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Data Tier Membership untuk informasi edukasi Guest
+  // Data Tier Membership untuk informasi edukasi Guest — sesuai PRD (Bronze/Silver/Gold)
   const tiers = [
     {
-      name: "Silver Member",
+      name: "Bronze",
       range: "0 - 1.000 Poin",
       benefits: [
         "Diskon obat 5%",
         "Antrean reguler otomatis",
         "Konsultasi chat dokter",
       ],
-      color: "border-slate-300 bg-slate-50",
     },
     {
-      name: "Gold Tier",
-      range: "1.001 - 5.000 Poin",
+      name: "Silver",
+      range: "1.001 - 3.000 Poin",
       benefits: [
-        "Diskon obat & tindakan 15%",
+        "Diskon obat & tindakan 10%",
         "Prioritas booking frontdesk",
         "Free grooming 2 bulan sekali",
         "Diskon jemput satwa sakit",
       ],
-      color: "border-amber-400 bg-amber-50/30 ring-2 ring-amber-400",
     },
     {
-      name: "Platinum VIP",
-      range: "5.001+ Poin",
+      name: "Gold",
+      range: "3.001+ Poin",
       benefits: [
         "Diskon semua layanan 25%",
         "Bebas biaya kamar rawat inap UGD",
         "Dokter panggilan 24/7 ke rumah",
         "Snack & Vitamin box bulanan",
       ],
-      color: "border-purple-400 bg-purple-50/20",
     },
   ];
 
@@ -319,12 +316,12 @@ export default function GuestHome() {
               <div
                 key={idx}
                 className={`p-6 rounded-3xl border-2 flex flex-col justify-between gap-6 relative ${
-                  t.name.includes("Gold") 
+                  t.name === "Gold" 
                     ? "border-amber-400 bg-amber-50/10 ring-2 ring-amber-400 text-white" 
                     : "border-slate-800 bg-slate-800/40 text-white"
                 }`}
               >
-                {t.name.includes("Gold") && (
+                {t.name === "Gold" && (
                   <span className="absolute -top-3 left-6 text-[10px] bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-full font-black uppercase shadow-sm tracking-wider">
                     Tier Paling Populer
                   </span>
@@ -345,7 +342,7 @@ export default function GuestHome() {
                         key={bIdx}
                         className="text-xs text-slate-300 flex items-start gap-2 leading-tight"
                       >
-                        <CheckCircle className={`w-4 h-4 shrink-0 mt-0.5 ${t.name.includes("Gold") ? "text-amber-400" : "text-slate-400"}`} />
+                        <CheckCircle className={`w-4 h-4 shrink-0 mt-0.5 ${t.name === "Gold" ? "text-amber-400" : "text-slate-400"}`} />
                         <span>{b}</span>
                       </li>
                     ))}

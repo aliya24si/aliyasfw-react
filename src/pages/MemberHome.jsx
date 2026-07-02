@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { 
   Award, 
@@ -16,45 +16,159 @@ import {
   CalendarPlus,
   History,
   UserCheck,
-  Stethoscope
+  Stethoscope,
+  PawPrint
 } from "lucide-react";
+import { supabase } from "../lib/supabase";
+import { Skeleton } from "../components/Skeleton";
+
+// Range tier sesuai PRD
+const TIER_CONFIG = [
+  {
+    name: "Bronze",
+    range: "0 - 1.000 Poin",
+    benefits: ["Diskon obat 5%", "Antrean reguler otomatis", "Konsultasi chat dokter"],
+    color: "border-amber-700 bg-amber-900/20",
+    iconBg: "bg-amber-700/30",
+  },
+  {
+    name: "Silver",
+    range: "1.001 - 3.000 Poin",
+    benefits: ["Diskon obat & tindakan 10%", "Prioritas booking frontdesk", "Free grooming 2 bulan sekali", "Diskon jemput satwa sakit"],
+    color: "border-slate-400 bg-slate-400/10 ring-2 ring-slate-400",
+    iconBg: "bg-slate-400/30",
+  },
+  {
+    name: "Gold",
+    range: "3.001+ Poin",
+    benefits: ["Diskon semua layanan 25%", "Bebas biaya kamar rawat inap UGD", "Dokter panggilan 24/7 ke rumah", "Snack & Vitamin box bulanan"],
+    color: "border-amber-400 bg-amber-400/10 ring-2 ring-amber-400",
+    iconBg: "bg-amber-400/30",
+  },
+];
+
+const vouchers = [
+  { id: "VCH-01", title: "Potongan Perawatan Gigi", desc: "Diskon 25% scaling gigi kucing/anjing", code: "DENTALCARE25" },
+  { id: "VCH-02", title: "Free Premium Grooming", desc: "Gratis 1x mandi terapi kutu & jamur", code: "FREEGROOMING" },
+  { id: "VCH-03", title: "Diskon Vaksinasi Rabies", desc: "Potongan Rp 50.000 untuk re-vaksinasi", code: "RABIESFREE" },
+];
+
+const activeDoctors = [
+  { name: "drh. Citra Kirana Sp.An", spec: "Spesialis Anestesi & Satwa Kecil", status: "On-Duty", time: "08:00 - 15:00" },
+  { name: "drh. Rian Jombang", spec: "Spesialis Bedah & Satwa Eksotis", status: "On-Duty", time: "13:00 - 20:00" },
+  { name: "drh. Farhan Malik", spec: "Dokter Gigi Hewan & Umum", status: "On-Duty", time: "10:00 - 17:00" },
+];
 
 export default function MemberHome() {
   const navigate = useNavigate();
   const [copiedCode, setCopiedCode] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const memberProfile = {
-    name: "Surya Kencana",
-    tier: "Gold Active Member",
-    points: 2450,
-    memberId: "PT-GOLD-99812",
-    petName: "Chiko (Persian Cat)"
+  // Fetch user profile dari Supabase
+  useEffect(() => {
+    let cancelled = false;
+    async function loadProfile() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          navigate("/login");
+          return;
+        }
+
+        const { data, error: profileError } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (profileError) throw profileError;
+        if (!cancelled) setProfile(data);
+      } catch (err) {
+        console.error("Gagal memuat profil member:", err);
+        if (!cancelled) setError("Gagal memuat data profil. Silakan refresh halaman.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    loadProfile();
+    return () => { cancelled = true; };
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/login");
   };
-
-  const vouchers = [
-    { id: "VCH-01", title: "Potongan Perawatan Gigi", desc: "Diskon 25% scaling gigi kucing/anjing", code: "DENTALCARE25" },
-    { id: "VCH-02", title: "Free Premium Grooming", desc: "Gratis 1x mandi terapi kutu & jamur", code: "FREEGROOMING" },
-    { id: "VCH-03", title: "Diskon Vaksinasi Rabies", desc: "Potongan Rp 50.000 untuk re-vaksinasi", code: "RABIESFREE" }
-  ];
-
-  const tiers = [
-    { name: "Silver Member", range: "0 - 1.000 Poin", benefits: ["Diskon obat 5%", "Antrean reguler otomatis", "Konsultasi chat dokter"], current: false, color: "border-slate-300 bg-slate-50" },
-    { name: "Gold Tier", range: "1.001 - 5.000 Poin", benefits: ["Diskon obat & tindakan 15%", "Prioritas booking frontdesk", "Free grooming 2 bulan sekali", "Diskon jemput satwa sakit"], current: true, color: "border-amber-400 bg-amber-50/30 ring-2 ring-amber-400" },
-    { name: "Platinum VIP", range: "5.001+ Poin", benefits: ["Diskon semua layanan 25%", "Bebas biaya kamar rawat inap UGD", "Dokter panggilan 24/7 ke rumah", "Snack & Vitamin box bulanan"], current: false, color: "border-purple-400 bg-purple-50/20" }
-  ];
-
-  // Data Dokter Aktif yang dipindahkan dari Guest Home
-  const activeDoctors = [
-    { name: "drh. Citra Kirana Sp.An", spec: "Spesialis Anestesi & Satwa Kecil", status: "On-Duty", time: "08:00 - 15:00" },
-    { name: "drh. Rian Jombang", spec: "Spesialis Bedah & Satwa Eksotis", status: "On-Duty", time: "13:00 - 20:00" },
-    { name: "drh. Farhan Malik", spec: "Dokter Gigi Hewan & Umum", status: "On-Duty", time: "10:00 - 17:00" }
-  ];
 
   const handleCopy = (code) => {
     navigator.clipboard.writeText(code);
     setCopiedCode(code);
     setTimeout(() => setCopiedCode(null), 2000);
   };
+
+  // Loading screen dengan skeleton
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#f8fafc] text-slate-800 antialiased flex flex-col font-sans">
+        <nav className="sticky top-0 z-50 bg-slate-900 text-white px-8 py-4 shadow-lg">
+          <div className="max-w-7xl mx-auto flex justify-between items-center">
+            <Skeleton className="h-10 w-40 bg-slate-700" />
+            <Skeleton className="h-10 w-28 bg-slate-700" />
+          </div>
+        </nav>
+        <header className="bg-gradient-to-r from-slate-900 via-slate-800 to-blue-950 py-14 px-8">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-4">
+              <Skeleton className="h-6 w-64 bg-slate-700" />
+              <Skeleton className="h-10 w-72 bg-slate-700" />
+              <Skeleton className="h-4 w-96 bg-slate-700" />
+            </div>
+            <Skeleton className="h-44 w-full rounded-3xl bg-amber-500/30" />
+          </div>
+        </header>
+        <main className="max-w-7xl w-full mx-auto px-8 py-12 space-y-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-28 w-full rounded-2xl" />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-48 w-full rounded-3xl" />
+            ))}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
+        <div className="text-center space-y-4 p-8">
+          <ShieldCheck className="w-16 h-16 text-red-400 mx-auto" />
+          <h2 className="text-xl font-bold text-slate-900">Gagal Memuat Dashboard</h2>
+          <p className="text-sm text-slate-500">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-primary text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition"
+          >
+            Refresh Halaman
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const tier = profile?.tier || "Bronze";
+  const points = profile?.points || 0;
+  const fullName = profile?.full_name || "Member";
+  const memberId = profile?.id ? `PT-${profile.id.slice(0, 8).toUpperCase()}` : "";
+
+  // Tentukan tier member saat ini berdasarkan threshold PRD
+  const currentTierIndex = points > 3000 ? 2 : points > 1000 ? 1 : 0;
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 antialiased flex flex-col font-sans">
@@ -80,11 +194,14 @@ export default function MemberHome() {
               <Link to="/member/history" className="text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-4 py-2 rounded-xl flex items-center gap-2 transition">
                 <History className="w-4 h-4" /> Riwayat Medis
               </Link>
+              <Link to="/member/patients" className="text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-4 py-2 rounded-xl flex items-center gap-2 transition">
+                <PawPrint className="w-4 h-4" /> Kelola Hewan
+              </Link>
             </div>
           </div>
 
-          <button 
-            onClick={() => navigate("/login")}
+          <button
+            onClick={handleSignOut}
             className="flex items-center gap-2 text-xs font-bold text-slate-300 hover:text-white bg-slate-800 border border-slate-700 hover:border-slate-600 px-4 py-2.5 rounded-xl transition cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
@@ -101,9 +218,9 @@ export default function MemberHome() {
             <div className="bg-amber-400/10 border border-amber-400/20 text-amber-300 px-3 py-1 rounded-full text-xs font-bold w-fit uppercase tracking-wider flex items-center gap-1.5">
               <Flame className="w-3.5 h-3.5 fill-amber-400" /> Selamat Datang Kembali, Member Eksklusif
             </div>
-            <h1 className="text-3xl lg:text-4xl font-black tracking-tight">{memberProfile.name}</h1>
+            <h1 className="text-3xl lg:text-4xl font-black tracking-tight">{fullName}</h1>
             <p className="text-slate-400 text-sm max-w-xl">
-              Terima kasih telah mempercayakan kesehatan medis <strong className="text-white">{memberProfile.petName}</strong> pada ekosistem digital PetTract.
+              Terima kasih telah menjadi bagian dari ekosistem digital PetTract. Kelola janji temu dan pantau kesehatan hewan kesayangan Anda.
             </p>
             <div className="pt-2">
               <button onClick={() => navigate("/member/booking")} className="bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold px-5 py-3 rounded-xl transition shadow-md flex items-center gap-2">
@@ -112,23 +229,23 @@ export default function MemberHome() {
             </div>
           </div>
 
-          {/* Card Kartu Member Digital */}
+          {/* Card Kartu Member Digital — data dari Supabase */}
           <div className="bg-gradient-to-br from-amber-400 to-amber-500 rounded-3xl p-6 text-slate-900 shadow-xl relative overflow-hidden transform hover:-translate-y-1 transition duration-300">
             <div className="flex justify-between items-start mb-6">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-slate-800">Tier Keanggotaan</span>
-                <h3 className="text-xl font-black leading-tight tracking-tight">{memberProfile.tier}</h3>
+                <h3 className="text-xl font-black leading-tight tracking-tight">{tier === "Gold" ? "Gold Member" : tier === "Silver" ? "Silver Member" : "Bronze Member"}</h3>
               </div>
               <QrCode className="w-10 h-10 text-slate-900 opacity-90" />
             </div>
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-900/10">
               <div>
                 <span className="text-[10px] font-bold uppercase text-slate-700 block">Total Poin</span>
-                <span className="text-2xl font-black tracking-tight">{memberProfile.points} <span className="text-xs font-medium">Pts</span></span>
+                <span className="text-2xl font-black tracking-tight">{points.toLocaleString()} <span className="text-xs font-medium">Pts</span></span>
               </div>
               <div className="text-right">
                 <span className="text-[10px] font-bold uppercase text-slate-700 block">ID Anggota</span>
-                <span className="text-sm font-mono font-bold tracking-wider">{memberProfile.memberId}</span>
+                <span className="text-sm font-mono font-bold tracking-wider">{memberId}</span>
               </div>
             </div>
           </div>
@@ -139,7 +256,7 @@ export default function MemberHome() {
       {/* ================= MAIN CONTENT ================= */}
       <main className="max-w-7xl w-full mx-auto px-8 py-12 space-y-16 flex-1">
         
-        {/* ================= BARU: SEKSI DOKTER AKTIF HARI INI ================= */}
+        {/* Seksi Dokter Aktif */}
         <section className="space-y-6">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-amber-500 font-bold text-xs uppercase tracking-wider">
@@ -165,7 +282,7 @@ export default function MemberHome() {
           </div>
         </section>
 
-        {/* ================= SEKSI VOUCHER PROMO ================= */}
+        {/* Seksi Voucher Promo */}
         <section className="space-y-6">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-wider">
@@ -200,43 +317,69 @@ export default function MemberHome() {
           </div>
         </section>
 
-        {/* ================= SEKSI TIER MEMBERSHIP ================= */}
+        {/* Seksi Tier Membership — dinamis dari data Supabase */}
         <section className="space-y-6">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-purple-600 font-bold text-xs uppercase tracking-wider">
               <Zap className="w-4 h-4" /> Leveling System
             </div>
             <h2 className="text-2xl font-black text-slate-900">Sistem Tingkatan Kualifikasi Member</h2>
+            <p className="text-slate-500 text-sm">Anda saat ini berada di level <strong>{tier}</strong> dengan <strong>{points.toLocaleString()} poin</strong>. Ajak hewan peliharaan Anda berobat untuk mengumpulkan lebih banyak poin!</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {tiers.map((t, idx) => (
-              <div key={idx} className={`p-6 rounded-3xl border-2 flex flex-col justify-between gap-6 relative ${t.color}`}>
-                {t.current && (
-                  <span className="absolute -top-3 left-6 text-[10px] bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-full font-black uppercase shadow-sm tracking-wider">
-                    Level Anda Saat Ini
-                  </span>
-                )}
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-black text-lg text-slate-900">{t.name}</h4>
-                    <span className="text-xs font-semibold text-slate-400 block mt-0.5">{t.range}</span>
+            {TIER_CONFIG.map((t, idx) => {
+              const isCurrent = idx === currentTierIndex;
+              const isUnlocked = idx <= currentTierIndex;
+              return (
+                <div
+                  key={idx}
+                  className={`p-6 rounded-3xl border-2 flex flex-col justify-between gap-6 relative transition-all ${
+                    isCurrent
+                      ? `${t.color} scale-[1.02] shadow-lg`
+                      : isUnlocked
+                      ? "border-slate-300 bg-slate-50/50 opacity-70"
+                      : "border-slate-200 bg-slate-100/50 opacity-50"
+                  }`}
+                >
+                  {isCurrent && (
+                    <span className="absolute -top-3 left-6 text-[10px] bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded-full font-black uppercase shadow-sm tracking-wider z-10">
+                      Level Anda Saat Ini
+                    </span>
+                  )}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black ${t.iconBg}`}>
+                        <span className="text-lg">{t.name === "Gold" ? "🥇" : t.name === "Silver" ? "🥈" : "🥉"}</span>
+                      </div>
+                      <div>
+                        <h4 className="font-black text-lg text-slate-900">{t.name}</h4>
+                        <span className="text-xs font-semibold text-slate-400 block mt-0.5">{t.range}</span>
+                      </div>
+                    </div>
+
+                    <ul className="space-y-2.5 pt-2">
+                      {t.benefits.map((b, bIdx) => (
+                        <li key={bIdx} className="text-xs text-slate-600 flex items-start gap-2 leading-tight">
+                          <CheckCircle className={`w-4 h-4 shrink-0 mt-0.5 ${isUnlocked ? "text-emerald-500" : "text-slate-300"}`} />
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="space-y-2.5 pt-2">
-                    {t.benefits.map((b, bIdx) => (
-                      <li key={bIdx} className="text-xs text-slate-600 flex items-start gap-2 leading-tight">
-                        <CheckCircle className={`w-4 h-4 shrink-0 mt-0.5 ${t.current ? "text-amber-500" : "text-slate-400"}`} />
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
+
+                  {!isUnlocked && (
+                    <div className="text-center text-[10px] font-bold text-slate-400 bg-slate-100 py-2 rounded-xl">
+                      🔒 Capai {t.range} untuk buka tier ini
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
-        {/* ================= INFORMASI ADVANATAGE ================= */}
+        {/* Informasi Advantage */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           <div className="lg:col-span-5 relative rounded-3xl overflow-hidden shadow-lg min-h-[300px]">
             <img src="/img/dokter1.jpg" alt="Premium Doctor Service" className="absolute inset-0 w-full h-full object-cover object-center" />
@@ -257,11 +400,11 @@ export default function MemberHome() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
                 <h5 className="font-bold text-sm text-slate-900">Rekam Medis Terkunci</h5>
-                <p className="text-xs text-slate-500">Histori alergi dan resep Chiko tersimpan permanen tanpa risiko hilang.</p>
+                <p className="text-xs text-slate-500">Histori medis hewan Anda tersimpan permanen dan hanya bisa diakses oleh Anda dan dokter yang bertugas.</p>
               </div>
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
                 <h5 className="font-bold text-sm text-slate-900">Bebas Antre Walk-In</h5>
-                <p className="text-xs text-slate-500">Datang sesuai jam kesepakatan langsung dipanggil masuk ruang poli.</p>
+                <p className="text-xs text-slate-500">Datang sesuai jam kesepakatan, langsung dipanggil masuk ruang poli tanpa antre panjang.</p>
               </div>
             </div>
           </div>

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import InputField from "../../components/InputField";
-import { useNavigate, Link } from "react-router-dom"; 
-import { userAPI } from "../../services/userAPI";
+import { useNavigate, Link } from "react-router-dom";
+import { supabaseService } from "../../services/supabaseService";
 
 export default function Login() {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -14,34 +14,32 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    
+
     const cleanEmail = email.toLowerCase().trim();
 
     try {
-      const userFound = await userAPI.checkLogin(cleanEmail, password);
+      await supabaseService.signIn(cleanEmail, password);
 
-      if (userFound && userFound.length > 0) {
-        const loggedInUser = userFound[0];
-        // Simpan data login ke localStorage
-        localStorage.setItem("userRole", loggedInUser.role);
-        localStorage.setItem("userName", loggedInUser.name);
-        localStorage.setItem("userEmail", loggedInUser.email);
+      // Ambil profile dari tabel public.users via RLS
+      const profile = await supabaseService.getCurrentUserProfile();
+      const role = profile?.role || "member";
 
-        // Pengalihan halaman berdasarkan role database
-        if (loggedInUser.role === "admin") {
-          navigate("/"); // Admin ke home utama / dashboard pusat
-        } else if (loggedInUser.role === "member") {
-          navigate("/member/home"); // Member ke member/home
-        } else if (loggedInUser.role === "guest") {
-          navigate("/guest/home");
-        } else {
-          navigate("/");
-        }
+      // Pengalihan halaman berdasarkan role database
+      if (role === "admin") {
+        navigate("/");
+      } else if (role === "member") {
+        navigate("/member/home");
       } else {
-        setError("Email atau Password salah. Silakan coba lagi.");
+        navigate("/");
       }
     } catch (err) {
-      setError("Terjadi masalah koneksi ke server.");
+      console.error("Login error:", err);
+      const message = err.message || "";
+      if (message.includes("Invalid login credentials")) {
+        setError("Email atau Password salah. Silakan coba lagi.");
+      } else {
+        setError("Gagal login: " + message);
+      }
     } finally {
       setLoading(false);
     }
@@ -109,6 +107,11 @@ export default function Login() {
               Belum punya akun?{" "}
               <Link to="/register" className="text-primary font-bold hover:underline">
                 Register di sini
+              </Link>
+            </div>
+            <div className="mt-4 text-center text-sm text-teks-samping">
+              <Link to="/forgot" className="text-primary font-medium hover:underline">
+                Lupa password?
               </Link>
             </div>
           </div>

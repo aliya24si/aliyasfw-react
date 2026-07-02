@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Loading from './components/Loading';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Lazy Loading Pages
 const MainLayout = lazy(() => import('./layouts/MainLayout'));
@@ -18,6 +19,7 @@ const Patients = lazy(() => import('./pages/Patients'));
 const MemberHome = lazy(() => import('./pages/MemberHome'));
 const MemberBooking = lazy(() => import('./pages/MemberBooking')); // TAMBAHAN BARU
 const MemberHistory = lazy(() => import('./pages/MemberHistory')); // TAMBAHAN BARU
+const MemberPatients = lazy(() => import('./pages/MemberPatients'));
 
 const NotFound = lazy(() => import('./components/NotFound'));
 
@@ -34,21 +36,22 @@ function App() {
             <Route path="/forgot" element={<Forgot />} />
           </Route>
 
-          {/* Layout Utama Dokter/Staff Internal (Ada Sidebar Kiri) */}
+          {/* Layout Utama Admin/Staff (Sidebar Kiri) — hanya untuk admin */}
           <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/Appointments" element={<Appointments />} />
-            <Route path="/Data User" element={<DataUser />} />
-            <Route path="/patients" element={<Patients />} />
+            <Route path="/" element={<ProtectedRoute allowedRoles={['admin']}><Home /></ProtectedRoute>} />
+            <Route path="/Appointments" element={<ProtectedRoute allowedRoles={['admin']}><Appointments /></ProtectedRoute>} />
+            <Route path="/Data User" element={<ProtectedRoute allowedRoles={['admin']}><DataUser /></ProtectedRoute>} />
+            <Route path="/patients" element={<ProtectedRoute allowedRoles={['admin']}><Patients /></ProtectedRoute>} />
           </Route>
 
           {/* RUTE GUEST DI LUAR LAYOUT UTAMA */}
           <Route path="/guest/home" element={<GuestHome />} />
 
-          {/* RUTE PORTAL PREMIUM MEMBER (STAND-ALONE LONG PAGE) */}
-          <Route path="/member/home" element={<MemberHome />} />
-          <Route path="/member/booking" element={<MemberBooking />} />   {/* TAMBAHAN BARU */}
-          <Route path="/member/history" element={<MemberHistory />} />   {/* TAMBAHAN BARU */}
+          {/* RUTE PORTAL PREMIUM MEMBER — hanya untuk member */}
+          <Route path="/member/home" element={<ProtectedRoute allowedRoles={['member']}><MemberHome /></ProtectedRoute>} />
+          <Route path="/member/booking" element={<ProtectedRoute allowedRoles={['member']}><MemberBooking /></ProtectedRoute>} />
+          <Route path="/member/history" element={<ProtectedRoute allowedRoles={['member']}><MemberHistory /></ProtectedRoute>} />
+          <Route path="/member/patients" element={<ProtectedRoute allowedRoles={['member']}><MemberPatients /></ProtectedRoute>} />
 
           {/* Halaman 404 */}
           <Route path="/404" element={<NotFound />} />

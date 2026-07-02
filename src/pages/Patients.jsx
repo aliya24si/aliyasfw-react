@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { userAPI } from '../services/userAPI';
+import { supabase } from '../lib/supabase';
 import { Search, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 
 export default function Patients() {
@@ -17,7 +17,15 @@ export default function Patients() {
   const loadPatients = async () => {
     try {
       setLoading(true);
-      const result = await userAPI.fetchPatients(currentPage, itemsPerPage, search);
+      // Fase 1: sementara fetch semua pasien (tanpa filter user)
+      // TODO: Fase 3 akan implementasi CRUD pasien dengan pagination & search
+      const { data, error } = await supabase
+        .from('patients')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      const result = { data: data || [], total: data?.length || 0 };
       setPatients(result.data);
       setTotalData(result.total);
     } catch (err) {
