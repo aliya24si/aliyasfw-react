@@ -26,7 +26,7 @@ export default function Login() {
 
       // Pengalihan halaman berdasarkan role database
       if (role === "admin") {
-        navigate("/");
+        navigate("/admin");
       } else if (role === "member") {
         navigate("/member/home");
       } else {

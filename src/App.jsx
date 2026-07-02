@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Loading from './components/Loading';
 import ProtectedRoute from './components/ProtectedRoute';
+import RootRedirect from './components/RootRedirect';
 
 // Lazy Loading Pages
 const MainLayout = lazy(() => import('./layouts/MainLayout'));
@@ -17,8 +18,8 @@ const Patients = lazy(() => import('./pages/Patients'));
 
 // REGISTRASI HALAMAN MEMBER BARU (LAZY LOADED)
 const MemberHome = lazy(() => import('./pages/MemberHome'));
-const MemberBooking = lazy(() => import('./pages/MemberBooking')); // TAMBAHAN BARU
-const MemberHistory = lazy(() => import('./pages/MemberHistory')); // TAMBAHAN BARU
+const MemberBooking = lazy(() => import('./pages/MemberBooking'));
+const MemberHistory = lazy(() => import('./pages/MemberHistory'));
 const MemberPatients = lazy(() => import('./pages/MemberPatients'));
 
 const NotFound = lazy(() => import('./components/NotFound'));
@@ -28,7 +29,10 @@ function App() {
     <Router>
       <Suspense fallback={<Loading />}>
         <Routes>
-          
+
+          {/* Root route — dinamis berdasarkan auth state */}
+          <Route path="/" element={<RootRedirect />} />
+
           {/* Layout Khusus Auth (Login, Register, Forgot) */}
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<Login />} />
@@ -38,10 +42,10 @@ function App() {
 
           {/* Layout Utama Admin/Staff (Sidebar Kiri) — hanya untuk admin */}
           <Route element={<MainLayout />}>
-            <Route path="/" element={<ProtectedRoute allowedRoles={['admin']}><Home /></ProtectedRoute>} />
-            <Route path="/Appointments" element={<ProtectedRoute allowedRoles={['admin']}><Appointments /></ProtectedRoute>} />
-            <Route path="/Data User" element={<ProtectedRoute allowedRoles={['admin']}><DataUser /></ProtectedRoute>} />
-            <Route path="/patients" element={<ProtectedRoute allowedRoles={['admin']}><Patients /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><Home /></ProtectedRoute>} />
+            <Route path="/admin/appointments" element={<ProtectedRoute allowedRoles={['admin']}><Appointments /></ProtectedRoute>} />
+            <Route path="/admin/data-user" element={<ProtectedRoute allowedRoles={['admin']}><DataUser /></ProtectedRoute>} />
+            <Route path="/admin/patients" element={<ProtectedRoute allowedRoles={['admin']}><Patients /></ProtectedRoute>} />
           </Route>
 
           {/* RUTE GUEST DI LUAR LAYOUT UTAMA */}
@@ -55,10 +59,10 @@ function App() {
 
           {/* Halaman 404 */}
           <Route path="/404" element={<NotFound />} />
-          
+
           {/* Redirect jika mengetik alamat asal-asalan */}
           <Route path="*" element={<Navigate to="/404" replace />} />
-          
+
         </Routes>
       </Suspense>
     </Router>

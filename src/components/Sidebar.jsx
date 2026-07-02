@@ -56,7 +56,7 @@ export default function Sidebar() {
       <nav className="flex-1 px-4 py-4 space-y-1">
         {/* Dashboard */}
         <NavLink
-          to="/"
+          to="/admin"
           className={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
         >
           <LayoutGrid size={18} />
@@ -65,7 +65,7 @@ export default function Sidebar() {
 
         {/* Patients */}
         <NavLink
-          to="/patients"
+          to="/admin/patients"
           className={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
         >
           <Users size={18} />
@@ -74,7 +74,7 @@ export default function Sidebar() {
 
         {/* Data User */}
         <NavLink
-          to="/Data User"
+          to="/admin/data-user"
           className={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
         >
           <Users size={18} />
@@ -99,7 +99,7 @@ export default function Sidebar() {
 
           {openMenus.appointments && (
             <div className="space-y-1">
-              <NavLink to="/appointments" className={subLinkStyle}>
+              <NavLink to="/admin/appointments" className={subLinkStyle}>
                 All Appointments
               </NavLink>
               <NavLink to="/calendar" className={subLinkStyle}>
