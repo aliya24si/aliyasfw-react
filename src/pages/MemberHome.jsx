@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, Loader2 } from "lucide-react";
 import { supabase } from "../lib/supabase";
-import MemberNavbar from "@/components/member/MemberNavbar";
-import MemberWelcome from "@/components/member/MemberWelcome";
-import MemberQuickActions from "@/components/member/MemberQuickActions";
-import MemberOverview from "@/components/member/MemberOverview";
-import MemberFooter from "@/components/member/MemberFooter";
+import GlobalNavbar from "@/components/layout/GlobalNavbar";
+import GlobalFooter from "@/components/layout/GlobalFooter";
+import MemberHeroCard from "@/components/member/MemberHeroCard";
+import MemberShortcuts from "@/components/member/MemberShortcuts";
+import MemberPromos from "@/components/member/MemberPromos";
+import MemberOnDuty from "@/components/member/MemberOnDuty";
 
 export default function MemberHome() {
   const navigate = useNavigate();
@@ -58,15 +59,15 @@ export default function MemberHome() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-50 text-zinc-950 antialiased flex flex-col">
-        <div className="bg-white/80 backdrop-blur-md border-b border-zinc-200/60 px-6 h-16 flex items-center justify-between">
-          <div className="bg-zinc-200 h-8 w-32 rounded-lg animate-pulse" />
-          <div className="bg-zinc-200 h-8 w-20 rounded-lg animate-pulse" />
+      <div className="min-h-screen bg-[#F8FAFC] text-[#102A5E] antialiased flex flex-col">
+        <div className="bg-white/80 backdrop-blur-md border-b border-[#102A5E]/10 px-6 h-16 flex items-center justify-between">
+          <div className="bg-[#102A5E]/10 h-8 w-32 rounded-lg animate-pulse" />
+          <div className="bg-[#102A5E]/10 h-8 w-20 rounded-lg animate-pulse" />
         </div>
         <div className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
-            <Loader2 className="w-8 h-8 text-zinc-400 animate-spin" />
-            <p className="text-sm text-zinc-400">Memuat dashboard...</p>
+            <Loader2 className="w-8 h-8 text-[#1D4ED8] animate-spin" />
+            <p className="text-sm text-slate-500">Memuat dashboard...</p>
           </div>
         </div>
       </div>
@@ -76,15 +77,15 @@ export default function MemberHome() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
         <div className="text-center space-y-4 p-8">
-          <ShieldCheck className="w-16 h-16 text-zinc-300 mx-auto" />
-          <h2 className="text-xl font-bold text-zinc-950">Gagal Memuat Dashboard</h2>
-          <p className="text-sm text-zinc-500">{error}</p>
+          <ShieldCheck className="w-16 h-16 text-slate-300 mx-auto" />
+          <h2 className="text-xl font-bold text-[#102A5E]">Gagal Memuat Dashboard</h2>
+          <p className="text-sm text-slate-500">{error}</p>
           <Button
             onClick={() => window.location.reload()}
             variant="default"
-            className="bg-zinc-950 text-white hover:bg-zinc-800"
+            className="bg-[#102A5E] text-white hover:bg-[#1D4ED8]"
           >
             Refresh Halaman
           </Button>
@@ -94,60 +95,28 @@ export default function MemberHome() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-950 antialiased flex flex-col">
-      <MemberNavbar onSignOut={handleSignOut} />
+    <div className="min-h-screen bg-[#F8FAFC] text-[#102A5E] antialiased flex flex-col">
+      <GlobalNavbar
+        isLoggedIn={true}
+        onSignOut={handleSignOut}
+        memberName={fullName}
+        variant="member"
+      />
 
-      <MemberWelcome
+      <MemberHeroCard
         fullName={fullName}
         tier={tier}
         points={points}
         onBooking={() => navigate("/member/booking")}
       />
 
-      <main className="max-w-7xl mx-auto px-6 py-10 w-full flex-1 space-y-10">
-        <MemberQuickActions />
-        <MemberOverview
-          fullName={fullName}
-          tier={tier}
-          points={points}
-        />
-
-        {/* Info Banner */}
-        <section>
-          <div className="bg-zinc-950 rounded-2xl p-8 text-white">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-              <div className="space-y-1">
-                <h3 className="text-lg font-bold tracking-tight">
-                  Butuh Bantuan?
-                </h3>
-                <p className="text-sm text-zinc-400 max-w-lg leading-relaxed">
-                  Hubungi tim dukungan kami jika Anda memiliki pertanyaan atau
-                  membutuhkan bantuan terkait layanan PetTract.
-                </p>
-              </div>
-              <div className="flex gap-3 shrink-0">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate("/member/history")}
-                  className="border-white/20 text-white hover:bg-white/10"
-                >
-                  Riwayat Saya
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => navigate("/member/booking")}
-                  className="bg-white text-zinc-950 hover:bg-zinc-100"
-                >
-                  Booking Sekarang
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
+      <main className="max-w-7xl mx-auto px-6 py-10 w-full flex-1 space-y-12">
+        <MemberShortcuts />
+        <MemberPromos />
+        <MemberOnDuty />
       </main>
 
-      <MemberFooter />
+      <GlobalFooter variant="member" />
     </div>
   );
 }

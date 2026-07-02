@@ -1,8 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { Skeleton } from "../components/Skeleton";
 import { useNavigate, Link } from "react-router-dom";
-import { Award, LogOut, Sparkles, CalendarPlus, History, ShieldCheck, Heart, AlertCircle, PawPrint } from "lucide-react";
+import { ShieldCheck, AlertCircle, PawPrint, Tag, Stethoscope, Syringe, Heart, Scissors, Microscope } from "lucide-react";
+import GlobalNavbar from "@/components/layout/GlobalNavbar";
+import GlobalFooter from "@/components/layout/GlobalFooter";
+
+const serviceTypes = [
+  { value: "konsultasi", label: "Konsultasi Umum", icon: Stethoscope, price: 150000 },
+  { value: "vaksinasi", label: "Vaksinasi", icon: Syringe, price: 200000 },
+  { value: "cek_rutin", label: "Pengecekan Rutin", icon: Heart, price: 100000 },
+  { value: "grooming", label: "Grooming", icon: Scissors, price: 120000 },
+  { value: "laboratorium", label: "Laboratorium", icon: Microscope, price: 250000 },
+];
+
+const doctors = [
+  { name: "drh. Rian Jombang", specialization: "Dokter Umum & Bedah" },
+  { name: "drh. Maya Sari", specialization: "Spesialis Kulit & Alergi" },
+  { name: "drh. Budi Hartono", specialization: "Spesialis Gizi & Perilaku" },
+  { name: "drh. Dewi Lestari", specialization: "Spesialis Reproduksi" },
+];
+
+const validCoupons = {
+  BRONZE10: { discountPercent: 10, description: "Diskon 10% untuk member Bronze" },
+  GOLD20: { discountPercent: 20, description: "Diskon 20% untuk member Gold" },
+  GRATISKONSUL: { discountPercent: 100, description: "Gratis konsultasi" },
+  PETCARE: { discountPercent: 15, description: "Diskon 15% asuransi kesehatan" },
+};
+
+const timeSlots = [
+  "Pagi (09:00 - 11:00)",
+  "Siang (13:00 - 15:00)",
+  "Sore (16:00 - 18:00)",
+  "Malam VIP (19:00 - 21:00)",
+];
 
 export default function MemberBooking() {
   const navigate = useNavigate();
@@ -14,10 +44,15 @@ export default function MemberBooking() {
 
   const [formData, setFormData] = useState({
     patient_id: "",
+    service_type: "",
+    doctor_name: "",
     date: "",
-    timeSlot: ""
+    timeSlot: "",
+    coupon_code: "",
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [couponApplied, setCouponApplied] = useState(null);
+  const [couponError, setCouponError] = useState("");
 
   useEffect(() => {
     loadPatients();
@@ -31,7 +66,7 @@ export default function MemberBooking() {
 
       const { data, error: fetchError } = await supabase
         .from("patients")
-        .select("id, name")
+        .select("id, name, species")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -45,9 +80,32 @@ export default function MemberBooking() {
     }
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/login");
+  };
+
+  const selectedService = serviceTypes.find(s => s.value === formData.service_type);
+  const basePrice = selectedService?.price || 0;
+  const discountPercent = couponApplied?.discountPercent || 0;
+  const finalPrice = basePrice - Math.round(basePrice * discountPercent / 100);
+
+  const applyCoupon = () => {
+    const code = formData.coupon_code.trim().toUpperCase();
+    if (!code) { setCouponError("Masukkan kode kupon"); return; }
+    const coupon = validCoupons[code];
+    if (coupon) {
+      setCouponApplied(coupon);
+      setCouponError("");
+    } else {
+      setCouponApplied(null);
+      setCouponError("Kode kupon tidak valid");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.patient_id || !formData.date || !formData.timeSlot) return;
+    if (!formData.patient_id || !formData.service_type || !formData.doctor_name || !formData.date || !formData.timeSlot) return;
     setSaving(true);
     setError(null);
     try {
@@ -60,9 +118,14 @@ export default function MemberBooking() {
       const { error: insertError } = await supabase.from("appointments").insert({
         user_id: userId,
         patient_id: formData.patient_id,
+        service_type: formData.service_type,
+        doctor_name: formData.doctor_name,
         appointment_date: formData.date,
         appointment_time: timeMap[formData.timeSlot],
-        status: "scheduled"
+        total_price: finalPrice,
+        coupon_code: formData.coupon_code.trim().toUpperCase() || null,
+        discount_amount: discountPercent > 0 ? basePrice - finalPrice : 0,
+        status: "scheduled",
       });
       if (insertError) throw insertError;
       setIsSubmitted(true);
@@ -77,66 +140,86 @@ export default function MemberBooking() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] flex flex-col">
-        <nav className="bg-slate-900 text-white px-8 py-4 shadow-lg">
-          <div className="max-w-7xl mx-auto flex justify-between">
-            <Skeleton className="h-10 w-40 bg-slate-700" />
-            <Skeleton className="h-10 w-28 bg-slate-700" />
-          </div>
-        </nav>
-        <main className="max-w-3xl mx-auto px-6 py-12">
-          <Skeleton className="h-10 w-72 mb-4" />
-          <Skeleton className="h-96 w-full rounded-3xl" />
+      <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
+        <div className="bg-white/80 backdrop-blur-md border-b border-[#102A5E]/10 px-6 h-16 flex items-center justify-between">
+          <div className="bg-[#102A5E]/10 h-8 w-40 rounded-lg animate-pulse" />
+          <div className="bg-[#102A5E]/10 h-8 w-28 rounded-lg animate-pulse" />
+        </div>
+        <main className="max-w-3xl mx-auto px-6 py-12 w-full">
+          <div className="bg-[#102A5E]/5 h-10 w-72 rounded-lg animate-pulse mb-4" />
+          <div className="bg-[#102A5E]/5 h-96 w-full rounded-3xl animate-pulse" />
         </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 antialiased flex flex-col font-sans">
-      <nav className="sticky top-0 z-50 bg-slate-900 text-white px-8 py-4 shadow-lg">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-8">
-            <Link to="/member/home" className="flex items-center gap-3">
-              <div className="bg-amber-400 text-slate-900 w-10 h-10 rounded-xl flex items-center justify-center font-black shadow-md">
-                <Award className="w-6 h-6" />
-              </div>
-              <span className="font-extrabold text-base tracking-tight">PetTract</span>
-            </Link>
-            <div className="hidden md:flex items-center gap-1 border-l border-slate-700 pl-6 space-x-2">
-              <Link to="/member/home" className="text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-4 py-2 rounded-xl flex items-center gap-2 transition">
-                <Sparkles className="w-4 h-4" /> Beranda VIP
-              </Link>
-              <Link to="/member/booking" className="text-sm font-bold text-amber-400 bg-slate-800 px-4 py-2 rounded-xl flex items-center gap-2">
-                <CalendarPlus className="w-4 h-4" /> Buat Appointment
-              </Link>
-              <Link to="/member/history" className="text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-4 py-2 rounded-xl flex items-center gap-2 transition">
-                <History className="w-4 h-4" /> Riwayat Medis
-              </Link>
-            </div>
-          </div>
-          <button onClick={async () => { await supabase.auth.signOut(); navigate("/login"); }} className="flex items-center gap-2 text-xs font-bold text-slate-300 bg-slate-800 border border-slate-700 px-4 py-2.5 rounded-xl cursor-pointer">
-            <LogOut className="w-3.5 h-3.5" /> Sign Out
-          </button>
-        </div>
-      </nav>
-
-      <main className="max-w-3xl w-full mx-auto px-6 py-12 flex-1">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#102A5E] antialiased flex flex-col">
+      <GlobalNavbar isLoggedIn={true} onSignOut={handleSignOut} variant="member" />
+      <main className="max-w-4xl w-full mx-auto px-6 pt-28 pb-12 flex-1">
         <div className="space-y-2 mb-8 text-center md:text-left">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Reservasi Slot Medis</h1>
-          <p className="text-sm text-slate-500">Pilih hewan peliharaan dan jadwal yang diinginkan.</p>
+          <h1 className="text-3xl font-bold text-[#102A5E] tracking-tight">Reservasi Appointment</h1>
+          <p className="text-sm text-slate-500">Pilih layanan, dokter, hewan, dan jadwal yang diinginkan.</p>
         </div>
 
         {isSubmitted ? (
           <div className="bg-emerald-50 border-2 border-emerald-200 rounded-3xl p-8 text-center space-y-3 shadow-sm">
             <ShieldCheck className="w-16 h-16 text-emerald-600 mx-auto animate-bounce" />
-            <h3 className="text-xl font-black text-slate-900">Appointment Berhasil Dibuat!</h3>
-            <p className="text-sm text-slate-600 max-w-md mx-auto">Dialihkan ke riwayat pemesanan...</p>
+            <h3 className="text-xl font-bold text-[#102A5E]">Appointment Berhasil Dibuat!</h3>
+            <p className="text-sm text-slate-600 max-w-md mx-auto">
+              {finalPrice > 0 && (
+                <span className="block mt-1 font-semibold">Total Pembayaran: Rp {finalPrice.toLocaleString("id-ID")}</span>
+              )}
+              Dialihkan ke riwayat pemesanan...
+            </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-md space-y-6">
-            {error && <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl">{error}</div>}
+          <form onSubmit={handleSubmit} className="bg-white border border-[#102A5E]/10 rounded-3xl p-8 shadow-lg shadow-[#102A5E]/5 space-y-6">
+            {error && <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl flex items-center gap-2"><AlertCircle className="w-4 h-4" />{error}</div>}
 
+            {/* Pilih Layanan */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-3">Pilih Layanan</label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {serviceTypes.map((svc) => {
+                  const isSelected = formData.service_type === svc.value;
+                  return (
+                    <button
+                      key={svc.value}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, service_type: svc.value })}
+                      className={`p-4 rounded-2xl border text-left transition-all ${
+                        isSelected
+                          ? "border-[#1D4ED8] bg-[#1D4ED8]/5 shadow-sm"
+                          : "border-[#102A5E]/10 hover:border-[#1D4ED8]/30 hover:bg-[#1D4ED8]/5"
+                      }`}
+                    >
+                      <svc.icon className={`w-6 h-6 mb-2 ${isSelected ? "text-[#1D4ED8]" : "text-slate-400"}`} />
+                      <p className="text-sm font-semibold text-[#102A5E]">{svc.label}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">Rp {svc.price.toLocaleString("id-ID")}</p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Pilih Dokter */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Pilih Dokter</label>
+              <select
+                required
+                value={formData.doctor_name}
+                onChange={(e) => setFormData({ ...formData, doctor_name: e.target.value })}
+                className="w-full bg-white px-4 py-3 rounded-xl border border-[#102A5E]/10 text-sm font-medium focus:ring-2 focus:ring-[#1D4ED8]/30 outline-none"
+              >
+                <option value="">-- Pilih Dokter --</option>
+                {doctors.map((doc, i) => (
+                  <option key={i} value={doc.name}>{doc.name} — {doc.specialization}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Pilih Hewan */}
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Pilih Hewan</label>
               {patients.length === 0 ? (
@@ -145,49 +228,115 @@ export default function MemberBooking() {
                   Belum ada data hewan. <Link to="/member/patients" className="font-bold underline">Tambah di sini</Link>
                 </div>
               ) : (
-                <select required value={formData.patient_id} onChange={(e) => setFormData({...formData, patient_id: e.target.value})}
-                  className="w-full bg-white px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-amber-400 outline-none">
+                <select
+                  required
+                  value={formData.patient_id}
+                  onChange={(e) => setFormData({ ...formData, patient_id: e.target.value })}
+                  className="w-full bg-white px-4 py-3 rounded-xl border border-[#102A5E]/10 text-sm font-medium focus:ring-2 focus:ring-[#1D4ED8]/30 outline-none"
+                >
                   <option value="">-- Pilih Hewan --</option>
-                  {patients.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  {patients.map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}{p.species ? ` (${p.species})` : ""}
+                    </option>
+                  ))}
                 </select>
               )}
             </div>
 
+            {/* Tanggal & Jam */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Tanggal Kedatangan</label>
-                <input required type="date" value={formData.date}
+                <input
+                  required type="date" value={formData.date}
                   min={new Date().toISOString().split("T")[0]}
-                  onChange={(e) => setFormData({...formData, date: e.target.value})}
-                  className="w-full bg-white px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-amber-400 outline-none" />
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  className="w-full bg-white px-4 py-3 rounded-xl border border-[#102A5E]/10 text-sm font-medium focus:ring-2 focus:ring-[#1D4ED8]/30 outline-none"
+                />
               </div>
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Sesi Jam</label>
-                <select required value={formData.timeSlot} onChange={(e) => setFormData({...formData, timeSlot: e.target.value})}
-                  className="w-full bg-white px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-amber-400 outline-none">
+                <select
+                  required
+                  value={formData.timeSlot}
+                  onChange={(e) => setFormData({ ...formData, timeSlot: e.target.value })}
+                  className="w-full bg-white px-4 py-3 rounded-xl border border-[#102A5E]/10 text-sm font-medium focus:ring-2 focus:ring-[#1D4ED8]/30 outline-none"
+                >
                   <option value="">-- Pilih Jam --</option>
-                  <option value="Pagi (09:00 - 11:00)">Pagi (09:00 - 11:00)</option>
-                  <option value="Siang (13:00 - 15:00)">Siang (13:00 - 15:00)</option>
-                  <option value="Sore (16:00 - 18:00)">Sore (16:00 - 18:00)</option>
-                  <option value="Malam VIP (19:00 - 21:00)">Malam VIP (19:00 - 21:00)</option>
+                  {timeSlots.map(slot => <option key={slot} value={slot}>{slot}</option>)}
                 </select>
               </div>
             </div>
 
-            <button type="submit" disabled={saving || patients.length === 0}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm py-4 rounded-xl transition cursor-pointer shadow-md disabled:opacity-40">
-              {saving ? "Memproses..." : "Konfirmasi & Kunci Slot"}
+            {/* Kode Kupon / Diskon */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                <Tag className="w-3.5 h-3.5 inline mr-1" />
+                Kode Kupon / Diskon (opsional)
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={formData.coupon_code}
+                  onChange={(e) => { setFormData({ ...formData, coupon_code: e.target.value }); setCouponApplied(null); setCouponError(""); }}
+                  placeholder="Contoh: BRONZE10, GOLD20"
+                  className="flex-1 bg-white px-4 py-3 rounded-xl border border-[#102A5E]/10 text-sm font-medium focus:ring-2 focus:ring-[#1D4ED8]/30 outline-none uppercase"
+                />
+                <button
+                  type="button"
+                  onClick={applyCoupon}
+                  className="px-5 bg-gradient-to-r from-[#102A5E] to-[#1D4ED8] text-white text-xs font-bold rounded-xl hover:from-[#1D4ED8] hover:to-[#102A5E] transition-all"
+                >
+                  Pakai
+                </button>
+              </div>
+              {couponApplied && (
+                <div className="mt-2 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-xl flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 shrink-0" />
+                  {couponApplied.description} — Potongan {couponApplied.discountPercent}%
+                </div>
+              )}
+              {couponError && (
+                <div className="mt-2 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  {couponError}
+                </div>
+              )}
+            </div>
+
+            {/* Ringkasan Harga */}
+            {selectedService && (
+              <div className="bg-[#F8FAFC] rounded-2xl p-5 border border-[#102A5E]/10 space-y-2">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Ringkasan Biaya</h4>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-600">{selectedService.label}</span>
+                  <span className="font-medium text-[#102A5E]">Rp {basePrice.toLocaleString("id-ID")}</span>
+                </div>
+                {discountPercent > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-emerald-600">Diskon ({discountPercent}%)</span>
+                    <span className="font-medium text-emerald-600">-Rp {(basePrice - finalPrice).toLocaleString("id-ID")}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm pt-2 border-t border-[#102A5E]/10">
+                  <span className="font-bold text-[#102A5E]">Total</span>
+                  <span className="font-bold text-[#1D4ED8]">Rp {finalPrice.toLocaleString("id-ID")}</span>
+                </div>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={saving || patients.length === 0}
+              className="w-full bg-gradient-to-r from-[#102A5E] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#102A5E] text-white font-bold text-sm py-4 rounded-xl transition-all cursor-pointer shadow-md shadow-[#102A5E]/20 disabled:opacity-40"
+            >
+              {saving ? "Memproses..." : "Konfirmasi & Booking Appointment"}
             </button>
           </form>
         )}
       </main>
-
-      <footer className="text-center text-xs font-semibold text-slate-500 py-6 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between px-8 max-w-7xl w-full mx-auto gap-4">
-        <p>© 2026 PetTract CRM System.</p>
-        <div className="flex items-center gap-1.5 text-blue-600">
-          <Heart className="w-4 h-4 fill-blue-600" /> <span>Dedicated for your animal health journey</span>
-        </div>
-      </footer>
+      <GlobalFooter variant="member" />
     </div>
   );
 }

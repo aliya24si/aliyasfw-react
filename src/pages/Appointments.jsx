@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, Clock, Loader2, FileText, AlertCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Loader2, FileText, AlertCircle, Tag } from 'lucide-react';
 import TopHeader from '../components/TopHeader';
 import Modal from '../components/Modal';
 import { supabase } from '../lib/supabase';
@@ -12,6 +12,7 @@ export default function Appointments() {
   const [selectedApt, setSelectedApt] = useState(null);
   const [diagnosis, setDiagnosis] = useState("");
   const [treatment, setTreatment] = useState("");
+  const [totalPrice, setTotalPrice] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
@@ -25,7 +26,7 @@ export default function Appointments() {
       setLoading(true);
       const { data, error: fetchError } = await supabase
         .from('appointments')
-        .select('*, patients(name), users(full_name)')
+        .select('*, patients(name, species), users(full_name)')
         .order('created_at', { ascending: false });
       if (fetchError) throw fetchError;
       setAppointments(data || []);
@@ -41,6 +42,7 @@ export default function Appointments() {
     setSelectedApt(apt);
     setDiagnosis("");
     setTreatment("");
+    setTotalPrice(apt.total_price || 0);
     setError(null);
     setModalOpen(true);
   };
@@ -53,10 +55,10 @@ export default function Appointments() {
     setError(null);
 
     try {
-      // 1. Update appointment status ke 'completed'
+      // 1. Update appointment status dan total_price
       const { error: updateError } = await supabase
         .from('appointments')
-        .update({ status: 'completed' })
+        .update({ status: 'completed', total_price: totalPrice })
         .eq('id', selectedApt.id);
       if (updateError) throw updateError;
 
@@ -141,8 +143,10 @@ export default function Appointments() {
                   <tr className="bg-gray-50 border-b border-gray-100 text-gray-500 font-semibold">
                     <th className="p-4">Pasien</th>
                     <th className="p-4">Pemilik</th>
+                    <th className="p-4">Layanan</th>
                     <th className="p-4">Tanggal</th>
                     <th className="p-4">Jam</th>
+                    <th className="p-4 text-right">Harga</th>
                     <th className="p-4">Status</th>
                     <th className="p-4 text-center">Aksi</th>
                   </tr>
@@ -157,10 +161,16 @@ export default function Appointments() {
                   ) : (
                     filtered.map((apt) => {
                       const badge = getStatusBadge(apt.status);
+                      const serviceLabels = { konsultasi: "Konsultasi", vaksinasi: "Vaksinasi", cek_rutin: "Cek Rutin", grooming: "Grooming", laboratorium: "Lab" };
                       return (
                         <tr key={apt.id} className="hover:bg-gray-50/70 transition-colors">
-                          <td className="p-4 font-medium text-gray-900">{apt.patients?.name || "-"}</td>
+                          <td className="p-4 font-medium text-gray-900">{apt.patients?.name || "-"}{apt.patients?.species ? <span className="text-gray-400 text-xs ml-1">({apt.patients.species})</span> : ""}</td>
                           <td className="p-4 text-gray-600">{apt.users?.full_name || "-"}</td>
+                          <td className="p-4">
+                            {apt.service_type ? (
+                              <span className="bg-blue-50 text-blue-700 text-[10px] px-2 py-0.5 rounded font-bold">{serviceLabels[apt.service_type] || apt.service_type}</span>
+                            ) : "-"}
+                          </td>
                           <td className="p-4">
                             <span className="flex items-center gap-1.5 text-gray-700">
                               <Clock size={14} className="text-gray-400" />
@@ -168,6 +178,17 @@ export default function Appointments() {
                             </span>
                           </td>
                           <td className="p-4 font-mono text-xs text-gray-500">{apt.appointment_time}</td>
+                          <td className="p-4 text-right">
+                            {apt.total_price > 0 ? (
+                              <div>
+                                <span className="font-semibold text-gray-900">Rp {apt.total_price.toLocaleString("id-ID")}</span>
+                                {apt.discount_amount > 0 && <span className="text-[10px] text-emerald-600 ml-1">(-{apt.discount_amount.toLocaleString("id-ID")})</span>}
+                                {apt.coupon_code && <div className="text-[10px] text-slate-400">Kupon: {apt.coupon_code}</div>}
+                              </div>
+                            ) : apt.service_type ? (
+                              <span className="text-slate-400 text-xs">Belum diisi</span>
+                            ) : "-"}
+                          </td>
                           <td className="p-4">
                             <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold border ${badge.color}`}>
                               {badge.label}
@@ -219,9 +240,10 @@ export default function Appointments() {
         {selectedApt && (
           <form onSubmit={handleComplete} className="space-y-5">
             <div className="bg-slate-50 rounded-xl p-4 space-y-1 text-sm">
-              <p><span className="font-bold text-slate-700">Pasien:</span> {selectedApt.patients?.name}</p>
+              <p><span className="font-bold text-slate-700">Pasien:</span> {selectedApt.patients?.name}{selectedApt.patients?.species ? ` (${selectedApt.patients.species})` : ""}</p>
               <p><span className="font-bold text-slate-700">Pemilik:</span> {selectedApt.users?.full_name}</p>
               <p><span className="font-bold text-slate-700">Tanggal:</span> {new Date(selectedApt.appointment_date).toLocaleDateString("id-ID")} • {selectedApt.appointment_time}</p>
+              {selectedApt.coupon_code && <p><span className="font-bold text-slate-700">Kupon:</span> <span className="text-emerald-600 font-bold">{selectedApt.coupon_code}</span> {selectedApt.discount_amount > 0 && <>— diskon Rp {selectedApt.discount_amount.toLocaleString("id-ID")}</>}</p>}
             </div>
 
             {error && (
@@ -229,6 +251,29 @@ export default function Appointments() {
                 <AlertCircle size={16} /> {error}
               </div>
             )}
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                <Tag size={14} className="inline mr-1" />
+                Total Harga (Jasa & Obat)
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">Rp</span>
+                <input
+                  type="number"
+                  min="0"
+                  value={totalPrice}
+                  onChange={(e) => setTotalPrice(parseInt(e.target.value) || 0)}
+                  className="w-full pl-14 pr-4 py-3 rounded-xl border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-amber-400 outline-none"
+                  placeholder="0"
+                />
+              </div>
+              {selectedApt.coupon_code && selectedApt.discount_amount > 0 && (
+                <div className="mt-2 text-xs text-emerald-600 flex items-center gap-1">
+                  <Tag size={12} /> Member menggunakan kupon {selectedApt.coupon_code} (diskon Rp {selectedApt.discount_amount.toLocaleString("id-ID")}) — harga akhir otomatis setelah diisi
+                </div>
+              )}
+            </div>
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Diagnosis</label>

@@ -1,14 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Award, LogOut, Sparkles, CalendarPlus, History, Heart, Clock, FileText, XCircle, PawPrint, Loader2 } from "lucide-react";
+import { Clock, FileText, XCircle, PawPrint, Loader2, Tag, X } from "lucide-react";
 import { supabase } from "../lib/supabase";
-import { Skeleton } from "../components/Skeleton";
+import GlobalNavbar from "@/components/layout/GlobalNavbar";
+import GlobalFooter from "@/components/layout/GlobalFooter";
+
+const speciesLabels = {
+  anjing: "Anjing", kucing: "Kucing", kelinci: "Kelinci",
+  hamster: "Hamster", burung: "Burung", reptil: "Reptil", ikan: "Ikan", lainnya: "Lainnya",
+};
+
+const serviceLabels = {
+  konsultasi: "Konsultasi Umum", vaksinasi: "Vaksinasi",
+  cek_rutin: "Pengecekan Rutin", grooming: "Grooming", laboratorium: "Laboratorium",
+};
 
 export default function MemberHistory() {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(null);
+  const [selectedApt, setSelectedApt] = useState(null);
+  const [medicalHistory, setMedicalHistory] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => {
     loadAppointments();
@@ -21,7 +36,7 @@ export default function MemberHistory() {
 
       const { data, error } = await supabase
         .from("appointments")
-        .select("*, patients(name)")
+        .select("*, patients(name, species)")
         .eq("user_id", user.id)
         .order("appointment_date", { ascending: false });
 
@@ -51,18 +66,33 @@ export default function MemberHistory() {
     }
   };
 
+  const handleViewResult = async (apt) => {
+    setSelectedApt(apt);
+    setLoadingHistory(true);
+    setModalOpen(true);
+    try {
+      const { data, error } = await supabase
+        .from("medical_histories")
+        .select("*")
+        .eq("appointment_id", apt.id)
+        .maybeSingle();
+      if (error) throw error;
+      setMedicalHistory(data);
+    } catch (err) {
+      console.error("Gagal memuat rekam medis:", err);
+      setMedicalHistory(null);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
   const getStatusBadge = (status) => {
     const map = {
-      scheduled: "bg-amber-100 text-amber-800 border-amber-200",
-      completed: "bg-emerald-100 text-emerald-800 border-emerald-200",
-      cancelled: "bg-red-100 text-red-800 border-red-200",
+      scheduled: { color: "bg-amber-100 text-amber-800 border-amber-200", label: "Terjadwal" },
+      completed: { color: "bg-emerald-100 text-emerald-800 border-emerald-200", label: "Selesai" },
+      cancelled: { color: "bg-red-100 text-red-800 border-red-200", label: "Dibatalkan" },
     };
-    const labels = {
-      scheduled: "Terjadwal",
-      completed: "Selesai",
-      cancelled: "Dibatalkan",
-    };
-    return { color: map[status] || "bg-gray-100 text-gray-500", label: labels[status] || status };
+    return map[status] || { color: "bg-gray-100 text-gray-500", label: status };
   };
 
   const handleSignOut = async () => {
@@ -70,65 +100,42 @@ export default function MemberHistory() {
     navigate("/login");
   };
 
+  const formatRupiah = (num) => {
+    if (!num) return "-";
+    return "Rp " + num.toLocaleString("id-ID");
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] flex flex-col">
-        <nav className="bg-slate-900 text-white px-8 py-4 shadow-lg">
-          <div className="max-w-7xl mx-auto flex justify-between">
-            <Skeleton className="h-10 w-40 bg-slate-700" />
-            <Skeleton className="h-10 w-28 bg-slate-700" />
-          </div>
-        </nav>
-        <main className="max-w-5xl mx-auto px-6 py-12 space-y-4">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)}
+      <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
+        <div className="bg-white/80 backdrop-blur-md border-b border-[#102A5E]/10 px-6 h-16 flex items-center justify-between">
+          <div className="bg-[#102A5E]/10 h-8 w-40 rounded-lg animate-pulse" />
+          <div className="bg-[#102A5E]/10 h-8 w-28 rounded-lg animate-pulse" />
+        </div>
+        <main className="max-w-5xl mx-auto px-6 py-12 w-full space-y-4">
+          {[1, 2, 3].map(i => <div key={i} className="bg-[#102A5E]/5 h-24 w-full rounded-2xl animate-pulse" />)}
         </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 antialiased flex flex-col font-sans">
-      <nav className="sticky top-0 z-50 bg-slate-900 text-white px-8 py-4 shadow-lg">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-8">
-            <Link to="/member/home" className="flex items-center gap-3">
-              <div className="bg-amber-400 text-slate-900 w-10 h-10 rounded-xl flex items-center justify-center font-black shadow-md">
-                <Award className="w-6 h-6" />
-              </div>
-              <span className="font-extrabold text-base tracking-tight">PetTract</span>
-            </Link>
-            <div className="hidden md:flex items-center gap-1 border-l border-slate-700 pl-6 space-x-2">
-              <Link to="/member/home" className="text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-4 py-2 rounded-xl flex items-center gap-2 transition">
-                <Sparkles className="w-4 h-4" /> Beranda VIP
-              </Link>
-              <Link to="/member/booking" className="text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 px-4 py-2 rounded-xl flex items-center gap-2 transition">
-                <CalendarPlus className="w-4 h-4" /> Buat Appointment
-              </Link>
-              <Link to="/member/history" className="text-sm font-bold text-amber-400 bg-slate-800 px-4 py-2 rounded-xl flex items-center gap-2">
-                <History className="w-4 h-4" /> Riwayat Medis
-              </Link>
-            </div>
-          </div>
-          <button onClick={handleSignOut} className="flex items-center gap-2 text-xs font-bold text-slate-300 bg-slate-800 border border-slate-700 hover:border-slate-600 px-4 py-2.5 rounded-xl transition cursor-pointer">
-            <LogOut className="w-3.5 h-3.5" /> Sign Out
-          </button>
-        </div>
-      </nav>
-
-      <main className="max-w-5xl w-full mx-auto px-6 py-12 flex-1 space-y-8">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#102A5E] antialiased flex flex-col">
+      <GlobalNavbar isLoggedIn={true} onSignOut={handleSignOut} variant="member" />
+      <main className="max-w-5xl w-full mx-auto px-6 pt-28 pb-12 flex-1 space-y-8">
         <div className="space-y-1">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Log Histori Kunjungan Medis</h1>
+          <h1 className="text-3xl font-bold text-[#102A5E] tracking-tight">Riwayat Appointment</h1>
           <p className="text-sm text-slate-500">Pantau jadwal aktif dan riwayat appointment hewan peliharaan Anda.</p>
         </div>
 
         {appointments.length === 0 ? (
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-12 text-center space-y-4">
+          <div className="bg-white border border-[#102A5E]/10 rounded-3xl p-12 text-center space-y-4 shadow-sm">
             <PawPrint className="w-16 h-16 text-slate-300 mx-auto" />
-            <h3 className="text-lg font-bold text-slate-600">Belum Ada Riwayat</h3>
+            <h3 className="text-lg font-bold text-[#102A5E]">Belum Ada Riwayat</h3>
             <p className="text-sm text-slate-400 max-w-md mx-auto">
               Anda belum memiliki appointment. Buat janji temu sekarang untuk mulai menggunakan layanan kami.
             </p>
-            <Link to="/member/booking" className="inline-block bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs font-bold px-5 py-3 rounded-xl transition shadow-md">
+            <Link to="/member/booking" className="inline-block bg-gradient-to-r from-[#102A5E] to-[#1D4ED8] text-white text-xs font-bold px-5 py-3 rounded-xl transition shadow-md">
               Buat Appointment
             </Link>
           </div>
@@ -138,35 +145,52 @@ export default function MemberHistory() {
               const badge = getStatusBadge(apt.status);
               const aptId = `APT-${apt.id.slice(0, 8).toUpperCase()}`;
               return (
-                <div key={apt.id} className="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-xs hover:border-slate-300 transition">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
+                <div key={apt.id} className="bg-white border border-[#102A5E]/10 rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm hover:shadow-md hover:border-[#1D4ED8]/20 transition-all">
+                  <div className="space-y-2 flex-1">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <span className="font-mono text-xs font-bold text-slate-400">{aptId}</span>
-                      <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold border ${badge.color}`}>
-                        {badge.label}
-                      </span>
+                      <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold border ${badge.color}`}>{badge.label}</span>
+                      {apt.service_type && (
+                        <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#1D4ED8]/10 text-[#1D4ED8] font-bold">
+                          {serviceLabels[apt.service_type] || apt.service_type}
+                        </span>
+                      )}
                     </div>
-                    <h3 className="font-extrabold text-base text-slate-900">
-                      {apt.patients?.name || "Hewan"} — {apt.notes || "Konsultasi"}
+                    <h3 className="font-bold text-base text-[#102A5E]">
+                      {apt.patients?.name || "Hewan"}
+                      {apt.patients?.species && <span className="text-slate-400 font-normal"> ({speciesLabels[apt.patients.species] || apt.patients.species})</span>}
+                      {apt.doctor_name && <span className="text-slate-400 font-normal"> — {apt.doctor_name}</span>}
                     </h3>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5 text-slate-400" />
                         {new Date(apt.appointment_date).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} • {apt.appointment_time}
                       </span>
+                      {apt.total_price > 0 && (
+                        <span className="flex items-center gap-1">
+                          <Tag className="w-3.5 h-3.5 text-slate-400" />
+                          <span className={apt.discount_amount > 0 ? "text-emerald-600" : "text-[#1D4ED8]"}>
+                            {formatRupiah(apt.total_price)}
+                            {apt.discount_amount > 0 && <span className="text-slate-400 ml-1 line-through">{formatRupiah(apt.total_price + apt.discount_amount)}</span>}
+                          </span>
+                        </span>
+                      )}
                     </div>
                   </div>
 
-                  <div className="w-full md:w-auto pt-2 md:pt-0">
+                  <div className="w-full md:w-auto pt-2 md:pt-0 flex gap-2">
                     {apt.status === "completed" ? (
-                      <button className="w-full md:w-auto text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-4 py-2 rounded-xl flex items-center justify-center gap-1.5 transition">
+                      <button
+                        onClick={() => handleViewResult(apt)}
+                        className="w-full md:w-auto text-xs font-bold text-[#1D4ED8] bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 border border-[#1D4ED8]/20 px-4 py-2 rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer"
+                      >
                         <FileText className="w-3.5 h-3.5" /> Lihat Hasil
                       </button>
                     ) : apt.status === "scheduled" ? (
                       <button
                         onClick={() => handleCancel(apt.id)}
                         disabled={cancelling === apt.id}
-                        className="w-full md:w-auto text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-4 py-2 rounded-xl flex items-center justify-center gap-1.5 transition disabled:opacity-50"
+                        className="w-full md:w-auto text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 px-4 py-2 rounded-xl flex items-center justify-center gap-1.5 transition disabled:opacity-50 cursor-pointer"
                       >
                         {cancelling === apt.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <XCircle className="w-3.5 h-3.5" />}
                         Batalkan
@@ -184,12 +208,60 @@ export default function MemberHistory() {
         )}
       </main>
 
-      <footer className="text-center text-xs font-semibold text-slate-500 py-6 border-t border-slate-200 bg-white flex flex-col sm:flex-row items-center justify-between px-8 max-w-7xl w-full mx-auto gap-4">
-        <p>© 2026 PetTract CRM System.</p>
-        <div className="flex items-center gap-1.5 text-blue-600">
-          <Heart className="w-4 h-4 fill-blue-600" /> <span>Dedicated for your animal health journey</span>
+      {/* Modal Medical History */}
+      {modalOpen && selectedApt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setModalOpen(false)}>
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+              <h2 className="text-lg font-bold text-[#102A5E]">Rekam Medis</h2>
+              <button onClick={() => setModalOpen(false)} className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition cursor-pointer">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="px-6 py-5 space-y-5">
+              <div className="bg-[#F8FAFC] rounded-xl p-4 space-y-1.5 text-sm border border-[#102A5E]/10">
+                <p><span className="font-bold text-[#102A5E]">Pasien:</span> {selectedApt.patients?.name}</p>
+                {selectedApt.patients?.species && <p><span className="font-bold text-[#102A5E]">Jenis:</span> {speciesLabels[selectedApt.patients.species] || selectedApt.patients.species}</p>}
+                {selectedApt.doctor_name && <p><span className="font-bold text-[#102A5E]">Dokter:</span> {selectedApt.doctor_name}</p>}
+                <p><span className="font-bold text-[#102A5E]">Tanggal:</span> {new Date(selectedApt.appointment_date).toLocaleDateString("id-ID")} • {selectedApt.appointment_time}</p>
+                {selectedApt.service_type && <p><span className="font-bold text-[#102A5E]">Layanan:</span> {serviceLabels[selectedApt.service_type] || selectedApt.service_type}</p>}
+              </div>
+
+              {loadingHistory ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 text-[#1D4ED8] animate-spin" />
+                  <span className="ml-2 text-sm text-slate-500">Memuat rekam medis...</span>
+                </div>
+              ) : medicalHistory ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Diagnosis</label>
+                    <div className="bg-white border border-[#102A5E]/10 rounded-xl p-4 text-sm text-slate-700 leading-relaxed">
+                      {medicalHistory.diagnosis}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Tindakan / Treatment</label>
+                    <div className="bg-white border border-[#102A5E]/10 rounded-xl p-4 text-sm text-slate-700 leading-relaxed">
+                      {medicalHistory.treatment}
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-slate-400 text-center">
+                    Dicatat pada {new Date(medicalHistory.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                  </p>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-sm text-slate-500">Rekam medis belum tersedia atau sedang diproses.</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </footer>
+      )}
+
+      <GlobalFooter variant="member" />
     </div>
   );
 }

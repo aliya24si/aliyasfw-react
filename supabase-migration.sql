@@ -29,6 +29,7 @@ create table public.patients (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references public.users(id) on delete cascade not null,
   name text not null,
+  species text, -- jenis hewan: anjing, kucing, kelinci, dll
   birth_date date not null,
   gender text check (gender in ('L', 'P')),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
@@ -39,9 +40,14 @@ create table public.appointments (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references public.users(id) on delete cascade not null,
   patient_id uuid references public.patients(id) on delete cascade not null,
+  service_type text, -- konsultasi, vaksinasi, cek_rutin, grooming, laboratorium
+  doctor_name text, -- nama dokter yang dipilih
   appointment_date date not null,
   appointment_time time not null,
   status text not null default 'scheduled' check (status in ('scheduled', 'completed', 'cancelled')),
+  total_price integer default 0, -- harga total jasa & obat
+  coupon_code text, -- kode kupon yang digunakan
+  discount_amount integer default 0, -- jumlah diskon
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
