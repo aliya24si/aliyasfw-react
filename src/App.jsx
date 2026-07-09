@@ -15,6 +15,9 @@ const Forgot = lazy(() => import('./pages/auth/Forgot'));
 const GuestHome = lazy(() => import('./pages/GuestHome'));
 const DataUser = lazy(() => import('./pages/DataUser'));
 const Patients = lazy(() => import('./pages/Patients'));
+const MedicalRecords = lazy(() => import('./pages/MedicalRecords'));
+const AppointmentCalendar = lazy(() => import('./pages/AppointmentCalendar'));
+const Settings = lazy(() => import('./pages/Settings'));
 
 // REGISTRASI HALAMAN MEMBER BARU (LAZY LOADED)
 const MemberHome = lazy(() => import('./pages/MemberHome'));
@@ -46,6 +49,9 @@ function App() {
             <Route path="/admin/appointments" element={<ProtectedRoute allowedRoles={['admin']}><Appointments /></ProtectedRoute>} />
             <Route path="/admin/data-user" element={<ProtectedRoute allowedRoles={['admin']}><DataUser /></ProtectedRoute>} />
             <Route path="/admin/patients" element={<ProtectedRoute allowedRoles={['admin']}><Patients /></ProtectedRoute>} />
+            <Route path="/admin/medical-records" element={<ProtectedRoute allowedRoles={['admin']}><MedicalRecords /></ProtectedRoute>} />
+            <Route path="/admin/calendar" element={<ProtectedRoute allowedRoles={['admin']}><AppointmentCalendar /></ProtectedRoute>} />
+            <Route path="/admin/settings" element={<ProtectedRoute allowedRoles={['admin']}><Settings /></ProtectedRoute>} />
           </Route>
 
           {/* RUTE GUEST DI LUAR LAYOUT UTAMA */}

@@ -16,16 +16,16 @@ export default function Patients() {
   const loadPatients = async () => {
     try {
       setLoading(true);
-      // Ambil data pasien dari tabel patients yang asli, dengan relasi user
       const { data, error } = await supabase
         .from('patients')
-        .select('*, users(full_name, email)')
+        .select('*, users(full_name)')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       setPatients(data || []);
     } catch (err) {
       console.error("Gagal memuat data pasien:", err);
+      alert("Gagal memuat data pasien dari database.");
     } finally {
       setLoading(false);
     }
@@ -90,14 +90,13 @@ export default function Patients() {
                 <th className="p-4">JK</th>
                 <th className="p-4 text-center">Usia</th>
                 <th className="p-4">Pemilik</th>
-                <th className="p-4">Email Pemilik</th>
                 <th className="p-4">Tgl Daftar</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50 text-gray-700">
               {loading ? (
                 <tr>
-                  <td colSpan="7" className="p-8 text-center text-gray-400">
+                  <td colSpan="6" className="p-8 text-center text-gray-400">
                     <div className="flex items-center justify-center gap-2">
                       <Loader2 className="animate-spin text-primary" size={20} />
                       <span>Memuat data pasien...</span>
@@ -106,7 +105,7 @@ export default function Patients() {
                 </tr>
               ) : paginated.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="p-8 text-center text-gray-400">
+                  <td colSpan="6" className="p-8 text-center text-gray-400">
                     <div className="flex flex-col items-center gap-2">
                       <PawPrint size={32} className="text-gray-300" />
                       <span>{patients.length === 0 ? "Belum ada data pasien." : "Pencarian tidak ditemukan."}</span>
@@ -121,8 +120,7 @@ export default function Patients() {
                     <td className="p-4 text-center">{item.gender === "L" ? "♂" : item.gender === "P" ? "♀" : "-"}</td>
                     <td className="p-4 text-center">{item.birth_date ? calculateAge(item.birth_date) + " thn" : "-"}</td>
                     <td className="p-4 font-medium text-gray-900">{item.users?.full_name || "-"}</td>
-                    <td className="p-4 text-gray-500">{item.users?.email || "-"}</td>
-                    <td className="p-4 text-gray-400">{new Date(item.created_at).toLocaleDateString("id-ID")}</td>
+                    <td className="p-4 text-gray-400">{item.created_at ? new Date(item.created_at).toLocaleDateString("id-ID") : "-"}</td>
                   </tr>
                 ))
               )}

@@ -102,7 +102,7 @@ export default function Sidebar() {
               <NavLink to="/admin/appointments" className={subLinkStyle}>
                 All Appointments
               </NavLink>
-              <NavLink to="/calendar" className={subLinkStyle}>
+              <NavLink to="/admin/calendar" className={subLinkStyle}>
                 Calendar View
               </NavLink>
             </div>
@@ -111,90 +111,16 @@ export default function Sidebar() {
 
         {/* Medical Records */}
         <NavLink
-          to="/records"
+          to="/admin/medical-records"
           className={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
         >
           <FileText size={18} />
           <span className="text-sm">Medical Records</span>
         </NavLink>
 
-        {/* Staff Dropdown */}
-        <div className="space-y-1">
-          <button
-            onClick={() => toggleMenu("staff")}
-            className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-[#6b7280] hover:bg-gray-50 transition-all"
-          >
-            <div className="flex items-center gap-3">
-              <Users size={18} />
-              <span className="text-sm">Staff</span>
-            </div>
-            <ChevronDown
-              size={14}
-              className={`transition-transform ${openMenus.staff ? "rotate-180" : ""}`}
-            />
-          </button>
-          {openMenus.staff && (
-            <div className="space-y-1">
-              <NavLink to="/staff/all" className={subLinkStyle}>
-                All Staff
-              </NavLink>
-              <NavLink to="/staff/profiles" className={subLinkStyle}>
-                Doctor Profiles
-              </NavLink>
-              <NavLink to="/staff/departments" className={subLinkStyle}>
-                Departments
-              </NavLink>
-            </div>
-          )}
-        </div>
-
-        {/* Billing Dropdown */}
-        <div className="space-y-1">
-          <button
-            onClick={() => toggleMenu("billing")}
-            className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-[#6b7280] hover:bg-gray-50 transition-all"
-          >
-            <div className="flex items-center gap-3">
-              <Wallet size={18} />
-              <span className="text-sm">Billing</span>
-            </div>
-            <ChevronDown
-              size={14}
-              className={`transition-transform ${openMenus.billing ? "rotate-180" : ""}`}
-            />
-          </button>
-          {openMenus.billing && (
-            <div className="space-y-1">
-              <NavLink to="/billing/overview" className={subLinkStyle}>
-                Overview
-              </NavLink>
-              <NavLink to="/billing/invoices" className={subLinkStyle}>
-                Invoices
-              </NavLink>
-            </div>
-          )}
-        </div>
-
-        {/* Reports & Analytics */}
-        <NavLink
-          to="/reports"
-          className={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
-        >
-          <ClipboardList size={18} />
-          <span className="text-sm">Reports</span>
-        </NavLink>
-
-        <NavLink
-          to="/analytics"
-          className={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
-        >
-          <BarChart3 size={18} />
-          <span className="text-sm">Analytics</span>
-        </NavLink>
-
         {/* Settings */}
         <NavLink
-          to="/settings"
+          to="/admin/settings"
           className={({ isActive }) => (isActive ? activeStyle : inactiveStyle)}
         >
           <Settings size={18} />
