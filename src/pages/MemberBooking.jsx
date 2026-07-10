@@ -44,7 +44,7 @@ export default function MemberBooking() {
 
   const [formData, setFormData] = useState({
     patient_id: "",
-    service_type: "",
+    service_type: [], // DIUBAH: Menjadi array untuk menampung beberapa layanan
     doctor_name: "",
     date: "",
     timeSlot: "",
@@ -85,10 +85,29 @@ export default function MemberBooking() {
     navigate("/login");
   };
 
-  const selectedService = serviceTypes.find(s => s.value === formData.service_type);
-  const basePrice = selectedService?.price || 0;
+  // DIUBAH: Menghitung akumulasi harga dari semua layanan yang dipilih
+  const selectedServices = serviceTypes.filter(s => formData.service_type.includes(s.value));
+  const basePrice = selectedServices.reduce((acc, curr) => acc + curr.price, 0);
   const discountPercent = couponApplied?.discountPercent || 0;
   const finalPrice = basePrice - Math.round(basePrice * discountPercent / 100);
+
+  // LOGIKA BARU: Fungsi untuk menambah/menghapus layanan dengan batasan min 1 max 2
+  const handleServiceSelect = (val) => {
+    setFormData((prev) => {
+      const current = prev.service_type;
+      if (current.includes(val)) {
+        // Jika sudah ada, hapus dari list
+        return { ...prev, service_type: current.filter((item) => item !== val) };
+      } else {
+        // Jika belum ada, cek apakah sudah mencapai batas maksimal 2
+        if (current.length >= 2) {
+          alert("Maksimal hanya dapat memilih 2 layanan sekaligus.");
+          return prev;
+        }
+        return { ...prev, service_type: [...current, val] };
+      }
+    });
+  };
 
   const applyCoupon = () => {
     const code = formData.coupon_code.trim().toUpperCase();
@@ -105,7 +124,8 @@ export default function MemberBooking() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.patient_id || !formData.service_type || !formData.doctor_name || !formData.date || !formData.timeSlot) return;
+    // DIUBAH: Validasi minimal harus memilih 1 layanan
+    if (!formData.patient_id || formData.service_type.length === 0 || !formData.doctor_name || !formData.date || !formData.timeSlot) return;
     setSaving(true);
     setError(null);
     try {
@@ -118,7 +138,8 @@ export default function MemberBooking() {
       const { error: insertError } = await supabase.from("appointments").insert({
         user_id: userId,
         patient_id: formData.patient_id,
-        service_type: formData.service_type,
+        // DIUBAH: Menggabungkan beberapa layanan menjadi string dipisah koma (e.g., "konsultasi, vaksinasi") agar tetap kompatibel dengan database tipe text
+        service_type: formData.service_type.join(", "),
         doctor_name: formData.doctor_name,
         appointment_date: formData.date,
         appointment_time: timeMap[formData.timeSlot],
@@ -177,20 +198,24 @@ export default function MemberBooking() {
           <form onSubmit={handleSubmit} className="bg-white border border-[#102A5E]/10 rounded-3xl p-8 shadow-lg shadow-[#102A5E]/5 space-y-6">
             {error && <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl flex items-center gap-2"><AlertCircle className="w-4 h-4" />{error}</div>}
 
-            {/* Pilih Layanan */}
+            {/* Pilih Layanan (DIUBAH untuk Multi-select) */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-3">Pilih Layanan</label>
+              <div className="flex justify-between items-center mb-3">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">Pilih Layanan</label>
+                <span className="text-xs text-slate-400 font-medium">Bisa pilih 1 - 2 layanan ({formData.service_type.length}/2)</span>
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {serviceTypes.map((svc) => {
-                  const isSelected = formData.service_type === svc.value;
+                  // Cek apakah item ini ada di dalam array service_type
+                  const isSelected = formData.service_type.includes(svc.value);
                   return (
                     <button
                       key={svc.value}
                       type="button"
-                      onClick={() => setFormData({ ...formData, service_type: svc.value })}
+                      onClick={() => handleServiceSelect(svc.value)}
                       className={`p-4 rounded-2xl border text-left transition-all ${
                         isSelected
-                          ? "border-[#1D4ED8] bg-[#1D4ED8]/5 shadow-sm"
+                          ? "border-[#1D4ED8] bg-[#1D4ED8]/5 shadow-sm ring-1 ring-[#1D4ED8]"
                           : "border-[#102A5E]/10 hover:border-[#1D4ED8]/30 hover:bg-[#1D4ED8]/5"
                       }`}
                     >
@@ -305,14 +330,16 @@ export default function MemberBooking() {
               )}
             </div>
 
-            {/* Ringkasan Harga */}
-            {selectedService && (
+            {/* Ringkasan Harga (DIUBAH untuk mendukung rincian multi-layanan) */}
+            {selectedServices.length > 0 && (
               <div className="bg-[#F8FAFC] rounded-2xl p-5 border border-[#102A5E]/10 space-y-2">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Ringkasan Biaya</h4>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-600">{selectedService.label}</span>
-                  <span className="font-medium text-[#102A5E]">Rp {basePrice.toLocaleString("id-ID")}</span>
-                </div>
+                {selectedServices.map((svc) => (
+                  <div key={svc.value} className="flex justify-between text-sm">
+                    <span className="text-slate-600">{svc.label}</span>
+                    <span className="font-medium text-[#102A5E]">Rp {svc.price.toLocaleString("id-ID")}</span>
+                  </div>
+                ))}
                 {discountPercent > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-emerald-600">Diskon ({discountPercent}%)</span>
@@ -328,7 +355,7 @@ export default function MemberBooking() {
 
             <button
               type="submit"
-              disabled={saving || patients.length === 0}
+              disabled={saving || patients.length === 0 || formData.service_type.length === 0}
               className="w-full bg-gradient-to-r from-[#102A5E] to-[#1D4ED8] hover:from-[#1D4ED8] hover:to-[#102A5E] text-white font-bold text-sm py-4 rounded-xl transition-all cursor-pointer shadow-md shadow-[#102A5E]/20 disabled:opacity-40"
             >
               {saving ? "Memproses..." : "Konfirmasi & Booking Appointment"}
