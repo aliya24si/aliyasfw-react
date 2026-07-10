@@ -9,6 +9,7 @@ import MemberHeroCard from "@/components/member/MemberHeroCard";
 import MemberShortcuts from "@/components/member/MemberShortcuts";
 import MemberPromos from "@/components/member/MemberPromos";
 import MemberOnDuty from "@/components/member/MemberOnDuty";
+import MemberTierInfo from "@/components/member/MemberTierInfo"; // <-- 1. IMPORT DISINI
 
 export default function MemberHome() {
   const navigate = useNavigate();
@@ -107,10 +108,13 @@ export default function MemberHome() {
         fullName={fullName}
         tier={tier}
         points={points}
-        onBooking={() => navigate("/member/booking")}
+        onBooking={() => navigate("/member/patients")}
       />
 
       <main className="max-w-7xl mx-auto px-6 py-10 w-full flex-1 space-y-12">
+        {/* 2. MASUKKAN KOMPONEN DISINI */}
+        <MemberTierInfo currentPoints={points} currentTier={tier} /> 
+        
         <MemberShortcuts />
         <MemberPromos />
         <MemberOnDuty />

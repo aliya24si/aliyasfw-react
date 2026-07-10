@@ -1,13 +1,30 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CalendarPlus, ArrowRight, Sparkles, Activity, User, Award, Shield } from "lucide-react";
+import {
+  CalendarPlus,
+  ArrowRight,
+  Sparkles,
+  Activity,
+  User,
+  Award,
+  Shield,
+  PawPrint,
+} from "lucide-react";
 
 export default function MemberHeroCard({ fullName, tier, points, onBooking }) {
   const tierConfig = {
     Gold: { color: "from-yellow-400 to-amber-600", label: "Gold", icon: Award },
-    Silver: { color: "from-slate-300 to-slate-500", label: "Silver", icon: Shield },
-    Bronze: { color: "from-amber-700 to-amber-900", label: "Bronze", icon: Shield },
+    Silver: {
+      color: "from-slate-300 to-slate-500",
+      label: "Silver",
+      icon: Shield,
+    },
+    Bronze: {
+      color: "from-amber-700 to-amber-900",
+      label: "Bronze",
+      icon: Shield,
+    },
   };
 
   const currentTier = tierConfig[tier] || tierConfig.Bronze;
@@ -39,8 +56,8 @@ export default function MemberHeroCard({ fullName, tier, points, onBooking }) {
             onClick={onBooking}
             className="gap-2 font-semibold shrink-0 bg-gradient-to-r from-[#102A5E] to-[#1D4ED8] text-white hover:from-[#1D4ED8] hover:to-[#102A5E] shadow-lg shadow-[#102A5E]/20 transition-all duration-300 hover:shadow-xl hover:shadow-[#102A5E]/30 hover:-translate-y-0.5"
           >
-            <CalendarPlus className="w-4 h-4" />
-            Buat Janji Temu
+            <PawPrint className="w-4 h-4" /> {/* Icon diganti di sini */}
+            Buat Data Pasien
             <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
@@ -61,13 +78,17 @@ export default function MemberHeroCard({ fullName, tier, points, onBooking }) {
                   <Activity className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white/80">PetTract</p>
+                  <p className="text-sm font-semibold text-white/80">
+                    PetTract
+                  </p>
                   <p className="text-[10px] text-white/50">Member Card</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 bg-white/10 rounded-full px-3 py-1.5">
                 <TierIcon className="w-3.5 h-3.5 text-[#FBBF24]" />
-                <span className="text-xs font-bold text-white">{currentTier.label}</span>
+                <span className="text-xs font-bold text-white">
+                  {currentTier.label}
+                </span>
               </div>
             </div>
 
@@ -106,7 +127,9 @@ export default function MemberHeroCard({ fullName, tier, points, onBooking }) {
                 <Sparkles className="w-4 h-4 text-[#1D4ED8]" />
               </div>
               <div>
-                <span className="font-semibold text-[#102A5E]">{points.toLocaleString()}</span>
+                <span className="font-semibold text-[#102A5E]">
+                  {points.toLocaleString()}
+                </span>
                 <span className="text-slate-400 ml-1">Poin</span>
               </div>
             </div>
@@ -117,7 +140,9 @@ export default function MemberHeroCard({ fullName, tier, points, onBooking }) {
                 </span>
               </div>
               <div>
-                <span className="font-semibold text-[#102A5E]">{currentTier.label}</span>
+                <span className="font-semibold text-[#102A5E]">
+                  {currentTier.label}
+                </span>
                 <span className="text-slate-400 ml-1">Tier</span>
               </div>
             </div>

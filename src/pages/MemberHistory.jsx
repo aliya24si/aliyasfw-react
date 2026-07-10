@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Clock, FileText, XCircle, PawPrint, Loader2, Tag, X } from "lucide-react";
+import { Clock, FileText, XCircle, PawPrint, Loader2, Tag, X, Star } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import GlobalNavbar from "@/components/layout/GlobalNavbar";
 import GlobalFooter from "@/components/layout/GlobalFooter";
@@ -25,6 +25,11 @@ export default function MemberHistory() {
   const [modalOpen, setModalOpen] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
+  // State Baru untuk Ulasan
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewText, setReviewText] = useState("");
+
   useEffect(() => {
     loadAppointments();
   }, []);
@@ -34,6 +39,7 @@ export default function MemberHistory() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { navigate("/login"); return; }
 
+      // Mengambil data sekaligus kolom rating & review_comment yang baru dibuat
       const { data, error } = await supabase
         .from("appointments")
         .select("*, patients(name, species)")
@@ -70,6 +76,11 @@ export default function MemberHistory() {
     setSelectedApt(apt);
     setLoadingHistory(true);
     setModalOpen(true);
+    
+    // Reset form input ulasan ke default setiap kali modal dibuka
+    setReviewRating(apt.rating || 5);
+    setReviewText(apt.review_comment || "");
+
     try {
       const { data, error } = await supabase
         .from("medical_histories")
@@ -83,6 +94,36 @@ export default function MemberHistory() {
       setMedicalHistory(null);
     } finally {
       setLoadingHistory(false);
+    }
+  };
+
+  // Fungsi Baru untuk Mengirim Ulasan ke Supabase
+  const handleSubmitReview = async (appointmentId) => {
+    if (!reviewText.trim()) return alert("Silakan tulis komentar ulasan Anda.");
+    setSubmittingReview(true);
+    try {
+      const { error } = await supabase
+        .from("appointments")
+        .update({
+          rating: reviewRating,
+          review_comment: reviewText,
+          reviewed_at: new Date().toISOString()
+        })
+        .eq("id", appointmentId);
+
+      if (error) throw error;
+      
+      // Update state lokal agar UI langsung berubah tanpa reload halaman
+      setAppointments(prev => prev.map(apt => 
+        apt.id === appointmentId ? { ...apt, rating: reviewRating, review_comment: reviewText } : apt
+      ));
+      setSelectedApt(prev => ({ ...prev, rating: reviewRating, review_comment: reviewText }));
+      alert("Terima kasih! Ulasan Anda berhasil disimpan.");
+    } catch (err) {
+      console.error(err);
+      alert("Gagal mengirim ulasan.");
+    } finally {
+      setSubmittingReview(false);
     }
   };
 
@@ -182,9 +223,21 @@ export default function MemberHistory() {
                     {apt.status === "completed" ? (
                       <button
                         onClick={() => handleViewResult(apt)}
-                        className="w-full md:w-auto text-xs font-bold text-[#1D4ED8] bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 border border-[#1D4ED8]/20 px-4 py-2 rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer"
+                        className={`w-full md:w-auto text-xs font-bold px-4 py-2 rounded-xl flex items-center justify-center gap-1.5 transition cursor-pointer border ${
+                          apt.rating 
+                            ? "text-emerald-700 bg-emerald-50 border-emerald-200 hover:bg-emerald-100" 
+                            : "text-[#1D4ED8] bg-[#1D4ED8]/10 border-[#1D4ED8]/20 hover:bg-[#1D4ED8]/20"
+                        }`}
                       >
-                        <FileText className="w-3.5 h-3.5" /> Lihat Hasil
+                        {apt.rating ? (
+                          <>
+                            <Star className="w-3.5 h-3.5 fill-emerald-600 text-emerald-600" /> Hasil & Ulasan
+                          </>
+                        ) : (
+                          <>
+                            <FileText className="w-3.5 h-3.5" /> Beri Ulasan / Hasil
+                          </>
+                        )}
                       </button>
                     ) : apt.status === "scheduled" ? (
                       <button
@@ -208,12 +261,12 @@ export default function MemberHistory() {
         )}
       </main>
 
-      {/* Modal Medical History */}
+      {/* Modal Medical History & Ulasan */}
       {modalOpen && selectedApt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setModalOpen(false)}>
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-              <h2 className="text-lg font-bold text-[#102A5E]">Rekam Medis</h2>
+              <h2 className="text-lg font-bold text-[#102A5E]">Rekam Medis & Ulasan</h2>
               <button onClick={() => setModalOpen(false)} className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition cursor-pointer">
                 <X size={20} />
               </button>
@@ -251,11 +304,56 @@ export default function MemberHistory() {
                   </p>
                 </div>
               ) : (
-                <div className="text-center py-8">
+                <div className="text-center py-8 border-b border-gray-100 pb-5">
                   <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                   <p className="text-sm text-slate-500">Rekam medis belum tersedia atau sedang diproses.</p>
                 </div>
               )}
+
+              {/* SEKSI INPUT / TAMPILAN ULASAN */}
+              <div className="pt-4 border-t border-gray-100">
+                <label className="block text-sm font-bold text-[#102A5E] mb-2">Ulasan Pelayanan</label>
+                
+                {selectedApt.rating ? (
+                  <div className="bg-emerald-50/60 border border-emerald-100 rounded-xl p-4 text-sm">
+                    <div className="flex items-center gap-1 text-amber-500 font-bold mb-1">
+                      {"★".repeat(selectedApt.rating)}{"☆".repeat(5 - selectedApt.rating)}
+                      <span className="text-xs text-slate-500 ml-1">({selectedApt.rating}/5)</span>
+                    </div>
+                    <p className="text-slate-600 italic">"{selectedApt.review_comment}"</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 bg-blue-50/50 border border-blue-100 p-4 rounded-xl">
+                    <p className="text-xs text-slate-500">Bagaimana kepuasan Anda terhadap pelayanan kami? Berikan rating:</p>
+                    <div className="flex items-center gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button 
+                          key={star} 
+                          type="button"
+                          onClick={() => setReviewRating(star)}
+                          className={`text-2xl transition cursor-pointer ${star <= reviewRating ? "text-amber-500" : "text-slate-300"}`}
+                        >
+                          ★
+                        </button>
+                      ))}
+                    </div>
+                    <textarea
+                      placeholder="Tulis ulasan masukan atau ucapan terima kasih untuk dokter/klinik..."
+                      value={reviewText}
+                      onChange={(e) => setReviewText(e.target.value)}
+                      className="w-full p-2.5 text-xs bg-white border border-slate-200 rounded-lg outline-none focus:border-[#1D4ED8]"
+                      rows={2}
+                    />
+                    <button
+                      onClick={() => handleSubmitReview(selectedApt.id)}
+                      disabled={submittingReview}
+                      className="w-full py-2 bg-[#102A5E] hover:bg-[#1D4ED8] text-white text-xs font-bold rounded-lg transition disabled:opacity-50 cursor-pointer"
+                    >
+                      {submittingReview ? "Mengirim..." : "Kirim Ulasan"}
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -264,4 +362,4 @@ export default function MemberHistory() {
       <GlobalFooter variant="member" />
     </div>
   );
-}
+} 
