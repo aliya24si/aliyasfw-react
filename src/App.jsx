@@ -55,7 +55,7 @@ function App() {
           </Route>
 
           {/* RUTE GUEST DI LUAR LAYOUT UTAMA */}
-          <Route path="/guest/home" element={<GuestHome />} />
+          <Route path="/" element={<GuestHome />} />
 
           {/* RUTE PORTAL PREMIUM MEMBER — hanya untuk member */}
           <Route path="/member/home" element={<ProtectedRoute allowedRoles={['member']}><MemberHome /></ProtectedRoute>} />
