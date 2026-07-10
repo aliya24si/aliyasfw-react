@@ -34,7 +34,7 @@ function App() {
         <Routes>
 
           {/* Root route — dinamis berdasarkan auth state */}
-          <Route path="/" element={<RootRedirect />} />
+          {/* <Route path="/" element={<RootRedirect />} /> */}
 
           {/* Layout Khusus Auth (Login, Register, Forgot) */}
           <Route element={<AuthLayout />}>
