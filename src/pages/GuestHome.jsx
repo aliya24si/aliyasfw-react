@@ -15,7 +15,6 @@ export default function GuestHome() {
         <GuestHero />
         <GuestFeatures />
         <GuestServices />
-        <GuestStats />
         <GuestReviews />
       </main>
       <GlobalFooter variant="guest" />
